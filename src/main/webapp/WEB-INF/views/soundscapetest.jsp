@@ -12,14 +12,21 @@
 <link rel="stylesheet"
 	href="https://bootswatch.com/_assets/css/custom.min.css">
 <link rel="stylesheet" href="/style.css" />
-<title>Welcome</title>
+<title>Soundscape Test</title>
 </head>
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
-	<h3>Welcome</h3>
-	<a href="/disastertest">Disasters</a>
-	<br>
-	<a href="/soundscapetest">Soundscapes</a>
+	<div class="container">
+		<form action="/searchbytag">
+			<p>
+				<label for="tag">Search for Top Tracks by Tag</label> <br> <input
+					type="text" name="tag" />
+			</p>
+			<p>
+				<button>Submit</button>
+			</p>
+		</form>
+	</div>
 </body>
 </html>

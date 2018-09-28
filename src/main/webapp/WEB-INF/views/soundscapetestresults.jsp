@@ -12,14 +12,34 @@
 <link rel="stylesheet"
 	href="https://bootswatch.com/_assets/css/custom.min.css">
 <link rel="stylesheet" href="/style.css" />
-<title>Welcome</title>
+<title>Soundscape Test</title>
 </head>
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
-	<h3>Welcome</h3>
-	<a href="/disastertest">Disasters</a>
-	<br>
-	<a href="/soundscapetest">Soundscapes</a>
+	<div class="container">
+		<form>
+			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Duration</th>
+						<th>URL</th>
+						<th>Rank</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="track" items="${tracks}">
+						<tr>
+							<td>${track.name}</td>
+							<td>${track.duration}</td>
+							<td>${track.url}</td>
+							<td>${track.attribution.rank}</td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</form>
+	</div>
 </body>
 </html>

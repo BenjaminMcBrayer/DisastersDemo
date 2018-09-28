@@ -1,0 +1,13 @@
+header {
+	display: flex;
+	justify-content: space-between;
+}
+
+.message {
+	padding: 8px;
+	background-color: pink;
+}
+
+.message:empty {
+	display: none;
+}
