@@ -1,4 +1,4 @@
-package com.DisastersDemo.entity;
+package com.DisastersDemo.entity.nasa;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

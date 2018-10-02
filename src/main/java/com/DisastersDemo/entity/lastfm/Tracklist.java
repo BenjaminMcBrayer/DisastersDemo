@@ -1,4 +1,4 @@
-package com.DisastersDemo.entity;
+package com.DisastersDemo.entity.lastfm;
 
 import java.util.ArrayList;
 

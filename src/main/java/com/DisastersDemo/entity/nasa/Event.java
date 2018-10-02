@@ -1,6 +1,7 @@
-package com.DisastersDemo.entity;
+package com.DisastersDemo.entity.nasa;
 
 import java.util.ArrayList;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**

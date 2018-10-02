@@ -1,4 +1,4 @@
-package com.DisastersDemo.entity;
+package com.DisastersDemo.entity.nasa;
 
 import java.util.Arrays;
 
@@ -64,7 +64,7 @@ public class Geometry {
 	 */
 	@Override
 	public String toString() {
-		return "Geometry [coordinates=" + Arrays.toString(coordinates) + "]";
+		return "Geometry [date = " + date + "; coordinates = " + Arrays.toString(coordinates) + "]";
 	}
 
 }

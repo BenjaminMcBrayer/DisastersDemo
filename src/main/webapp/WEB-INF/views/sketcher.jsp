@@ -12,33 +12,29 @@
 <link rel="stylesheet"
 	href="https://bootswatch.com/_assets/css/custom.min.css">
 <link rel="stylesheet" href="/style.css" />
-<title>Disaster Test</title>
+<title>Insert title here</title>
 </head>
 <body>
-	<%@include file="partials/header.jsp"%>
+<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
 	<div class="container">
-		<h3>EONet Events</h3>
-		<form>
-			<table>
-				<thead>
-					<tr>
-						<th>ID</th>
-						<th>Title</th>
-						<th>Coordinates</th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach var="event" items="${events}">
-						<tr>
-							<td>${event.id}</td>
-							<td>${event.title}</td>
-							<td>${event.geometries}</td>
-						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
-		</form>
+	<form action="/sketch">
+		<select name="category">
+			<option>Drought</option>
+			<option>Dust and Haze</option>
+			<option>Earthquakes</option>
+			<option>Floods</option>
+			<option>Landslides</option>
+			<option>Manmade</option>
+			<option>Sea and Lake Ice</option>
+			<option>Severe Storms</option>
+			<option>Snow</option>
+			<option>Temperature Extremes</option>
+			<option>Volcanoes</option>
+			<option>Water Color</option>
+			<option>Wildfires</option>
+		</select>
+	</form>
 	</div>
 </body>
 </html>

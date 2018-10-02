@@ -33,7 +33,7 @@
 						<tr>
 							<td>${track.name}</td>
 							<td>${track.duration}</td>
-							<td>${track.url}</td>
+							<td><a href="${track.url}">${track.url}</a></td>
 							<td>${track.attribution.rank}</td>
 						</tr>
 					</c:forEach>
