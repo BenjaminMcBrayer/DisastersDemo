@@ -15,26 +15,29 @@
 <title>Insert title here</title>
 </head>
 <body>
-<%@include file="partials/header.jsp"%>
+	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
 	<div class="container">
-	<form action="/sketch">
-		<select name="category">
-			<option>Drought</option>
-			<option>Dust and Haze</option>
-			<option>Earthquakes</option>
-			<option>Floods</option>
-			<option>Landslides</option>
-			<option>Manmade</option>
-			<option>Sea and Lake Ice</option>
-			<option>Severe Storms</option>
-			<option>Snow</option>
-			<option>Temperature Extremes</option>
-			<option>Volcanoes</option>
-			<option>Water Color</option>
-			<option>Wildfires</option>
-		</select>
-	</form>
+		<form action="/returnmydisasterlist">
+			<select name="usercat">
+				<option value="6">Drought</option>
+				<option value="7">Dust and Haze</option>
+				<option value="16">Earthquakes</option>
+				<option value="9">Floods</option>
+				<option value="14">Landslides</option>
+				<option value="19">Manmade</option>
+				<option value="15">Sea and Lake Ice</option>
+				<option value="10">Severe Storms</option>
+				<option value="17">Snow</option>
+				<option value="18">Temperature Extremes</option>
+				<option value="12">Volcanoes</option>
+				<option value="13">Water Color</option>
+				<option value="8">Wildfires</option>
+			</select>
+			Enter start date: <input type="date" name="userstartdate"/>
+			Enter end date: <input type="date" name="userenddate"/>
+			<input type="submit" value="Submit"/>
+		</form>
 	</div>
 </body>
 </html>

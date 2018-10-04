@@ -2,6 +2,7 @@ package com.DisastersDemo.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpSession;
@@ -39,6 +40,7 @@ import com.DisastersDemo.entity.nasa.Event;
 import com.DisastersDemo.entity.nasa.EventList;
 import com.DisastersDemo.entity.spotify.JsonSpotifyTokenWrapper;
 import com.DisastersDemo.repo.UsersRepository;
+import com.DisastersDemo.service.nasa.NasaService;
 
 /**
  * @author
@@ -65,6 +67,7 @@ public class DisasterController {
 	@Autowired
 	UsersRepository uR;
 
+	// TODO: Create home page
 	@RequestMapping("/")
 	public ModelAndView index() {
 		return new ModelAndView("index", "test", "Hello, World!");
@@ -86,7 +89,6 @@ public class DisasterController {
 			return mv;
 		}
 		session.setAttribute("user", user);
-
 		redir.addFlashAttribute("message", "Logged in.");
 		return new ModelAndView("redirect:/");
 	}
@@ -101,27 +103,63 @@ public class DisasterController {
 	// Testing NASA API
 	@RequestMapping("/disastertest")
 	public ModelAndView showMeTheDisasters() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-
-		CloseableHttpClient httpClient = HttpClients.custom().setSSLHostnameVerifier(new NoopHostnameVerifier())
-				.build();
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		requestFactory.setHttpClient(httpClient);
-
-		RestTemplate restTemplate = new RestTemplate(requestFactory);
-
+		RestTemplate restTemplate = NasaService.getEONetRestTemplate();
+		HttpEntity<String> httpEntity = NasaService.getEONetHttpEntity();
 		ResponseEntity<EventList> response = restTemplate.exchange(
 				"https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=5&days=20&source=InciWeb,EO&status=open",
-				HttpMethod.GET, entity, EventList.class);
-
+				HttpMethod.GET, httpEntity, EventList.class);
 		EventList eventList = response.getBody();
-
 		ArrayList<Event> events = eventList.getEvents();
-
 		return new ModelAndView("disastertest", "events", events);
+	}
+
+	@RequestMapping("/disastercategorytest")
+	public ModelAndView showMeTheDisastersByCategory() {
+		RestTemplate restTemplate = NasaService.getEONetRestTemplate();
+		HttpEntity<String> httpEntity = NasaService.getEONetHttpEntity();
+		String userCat = "8";
+		String userStartDate = "2016-04-12";
+		String userEndDate = "2018-07-15";
+		ResponseEntity<EventList> response = restTemplate
+				.exchange(
+						"https://eonet.sci.gsfc.nasa.gov/api/v2.1/categories/" + userCat
+								+ "?limit=50&source=InciWeb,EO&status=open",
+						HttpMethod.GET, httpEntity, EventList.class);
+		EventList eventList = response.getBody();
+		ArrayList<Event> disasters = eventList.getEvents();
+		ArrayList<String> dates = NasaService.getDates(disasters);
+		ArrayList<LocalDate> localDates = NasaService.getLocalDates(dates, userStartDate, userEndDate);
+		String[] validDatesArray = NasaService.getValidDatesArray(localDates);
+		ArrayList<Event> validEvents = NasaService.getValidEvents(validDatesArray, disasters);
+		return new ModelAndView("disastercategorytest", "events", validEvents);
+	}
+
+	// Sketching the disasters
+	@RequestMapping("/sketcher")
+	public String sketcher() {
+		return "sketcher";
+	}
+
+	@RequestMapping("/returnmydisasterlist")
+	public ModelAndView returnMyDisasterList(@RequestParam("usercat") String userCat,
+			@RequestParam("userstartdate") String userStartDate, @RequestParam("userenddate") String userEndDate) {
+
+		// Calculate number of days
+		String numDays = NasaService.getNumDays(userStartDate, userEndDate);
+
+		RestTemplate restTemplate = NasaService.getEONetRestTemplate();
+		HttpEntity<String> httpEntity = NasaService.getEONetHttpEntity();
+		ResponseEntity<EventList> response = restTemplate
+				.exchange("https://eonet.sci.gsfc.nasa.gov/api/v2.1/categories/" + userCat + "?limit=50&days=" + numDays
+						+ "&source=InciWeb,EO&status=open", HttpMethod.GET, httpEntity, EventList.class);
+		EventList eventList = response.getBody();
+		ArrayList<Event> disasters = eventList.getEvents();
+		ArrayList<String> dates = NasaService.getDates(disasters);
+		ArrayList<LocalDate> localDates = NasaService.getLocalDates(dates, userStartDate, userEndDate);
+		String[] validDatesArray = NasaService.getValidDatesArray(localDates);
+		ArrayList<Event> validEvents = NasaService.getValidEvents(validDatesArray, disasters);
+		return new ModelAndView("mydisasterlist", "disasters", validEvents);
+
 	}
 
 	// Testing last.fm API
@@ -153,8 +191,10 @@ public class DisasterController {
 		return "spotifytest";
 	}
 
+	// FIXME
 	@PostMapping(value = "getToken", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
 	public ModelAndView getSpotifyToken() throws UnsupportedEncodingException {
 		CloseableHttpClient httpClient = HttpClients.custom().setSSLHostnameVerifier(new NoopHostnameVerifier())
 				.build();
@@ -179,9 +219,9 @@ public class DisasterController {
 		String encodedClientCredentials = URLEncoder.encode(clientCredentials, "UTF-8");
 
 		requestBody.add(encodedGrantType, encodedClientCredentials);
-		
-		//String requestBody = "grant_type=client_credentials";
-		//String encodedRequestBody = URLEncoder.encode(requestBody, "UTF-8");
+
+		// String requestBody = "grant_type=client_credentials";
+		// String encodedRequestBody = URLEncoder.encode(requestBody, "UTF-8");
 
 		HttpEntity<?> entity = new HttpEntity<Object>(requestBody, headers);
 //		ResponseEntity<JsonSpotifyTokenWrapper> responseEntity = restTemplate.exchange(
@@ -192,15 +232,15 @@ public class DisasterController {
 		return new ModelAndView("spotifytestresults", "token", response);
 	}
 
-	// Sketching the disasters
-	@RequestMapping("/sketcher")
-	public String sketcher() {
-		return "sketcher";
+	@RequestMapping("/spotifyplaybutton")
+	public String spotifyPlayButton() {
+		return "spotifyplaybutton";
 	}
 
-	@RequestMapping("/sketch")
-	public ModelAndView sketcher(@RequestParam("category") String category, @RequestParam("period") String period) {
-		return new ModelAndView("sketcher");
+	// Testing Google Maps
+	@RequestMapping("/googlemapstest")
+	public String googleMapsTest() {
+		return "googlemapstest";
 	}
 
 	// Integration Testing

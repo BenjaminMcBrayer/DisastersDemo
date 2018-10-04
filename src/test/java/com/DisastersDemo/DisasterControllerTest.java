@@ -7,9 +7,10 @@ import org.junit.Test;
 public class DisasterControllerTest {
 
 	@Test
-	public void test() {
+	public void test1() {
 		fail("Not yet implemented");
 	}
+	
 
 	
 }

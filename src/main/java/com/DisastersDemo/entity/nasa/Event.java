@@ -3,6 +3,7 @@ package com.DisastersDemo.entity.nasa;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author
@@ -10,11 +11,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
+	@JsonProperty
 	private String id;
+	@JsonProperty
 	private String title;
+	@JsonProperty
 	private String description;
+	@JsonProperty
 	private String link;
+	@JsonProperty
 	private ArrayList<Category> categories;
+	@JsonProperty
 	private ArrayList<Geometry> geometries;
 
 	public Event() {

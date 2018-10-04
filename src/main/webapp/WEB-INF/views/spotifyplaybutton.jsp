@@ -12,16 +12,17 @@
 <link rel="stylesheet"
 	href="https://bootswatch.com/_assets/css/custom.min.css">
 <link rel="stylesheet" href="/style.css" />
-<title>Welcome</title>
+<title>Spotify Play Button</title>
 </head>
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
-	<h3>Welcome</h3>
-	<a href="/disastertest">Disasters by Event</a>
-	<br>
-	<a href="disastercategorytest">Disasters by Category</a>
-	<br>
-	<a href="/soundscapetest">Soundscapes</a>
+	<iframe
+		src="https://open.spotify.com/embed/album/7GWzRfw1NhDVQYNzGu8sWM"
+		width="300" height="380" frameborder="0" allowtransparency="true"
+		allow="encrypted-media"></iframe>
+</head>
+<body>
+
 </body>
 </html>

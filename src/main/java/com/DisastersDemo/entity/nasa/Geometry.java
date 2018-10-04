@@ -3,6 +3,7 @@ package com.DisastersDemo.entity.nasa;
 import java.util.Arrays;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author
@@ -10,8 +11,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Geometry {
+	@JsonProperty
 	private String date;
+	@JsonProperty
 	private String type;
+	@JsonProperty
 	private Double[] coordinates;
 
 	public Geometry() {
@@ -64,7 +68,7 @@ public class Geometry {
 	 */
 	@Override
 	public String toString() {
-		return "Geometry [date = " + date + "; coordinates = " + Arrays.toString(coordinates) + "]";
+		return "Geometry [date=" + date + ", type=" + type + ", coordinates=" + Arrays.toString(coordinates) + "]";
 	}
 
 }

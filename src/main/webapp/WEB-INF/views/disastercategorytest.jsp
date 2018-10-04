@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,16 +12,35 @@
 <link rel="stylesheet"
 	href="https://bootswatch.com/_assets/css/custom.min.css">
 <link rel="stylesheet" href="/style.css" />
-<title>Welcome</title>
+<title>Disasters by Category</title>
 </head>
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
-	<h3>Welcome</h3>
-	<a href="/disastertest">Disasters by Event</a>
-	<br>
-	<a href="disastercategorytest">Disasters by Category</a>
-	<br>
-	<a href="/soundscapetest">Soundscapes</a>
+</head>
+<body>
+	<div class="container">
+		<h3>EONet Events by Category</h3>
+		<form>
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Title</th>
+						<th>Coordinates</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="event" items="${events}">
+						<tr>
+							<td>${event.id}</td>
+							<td>${event.title}</td>
+							<td>${event.geometries}</td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</form>
+	</div>
 </body>
 </html>

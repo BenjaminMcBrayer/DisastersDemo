@@ -1,6 +1,7 @@
 package com.DisastersDemo.entity.nasa;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author
@@ -8,7 +9,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Category {
+	@JsonProperty
 	private String id;
+	@JsonProperty
 	private String title;
 
 	public Category() {

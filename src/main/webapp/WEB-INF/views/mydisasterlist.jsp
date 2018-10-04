@@ -12,16 +12,34 @@
 <link rel="stylesheet"
 	href="https://bootswatch.com/_assets/css/custom.min.css">
 <link rel="stylesheet" href="/style.css" />
-<title>Welcome</title>
+<title>My Disaster List</title>
 </head>
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
-	<h3>Welcome</h3>
-	<a href="/disastertest">Disasters by Event</a>
-	<br>
-	<a href="disastercategorytest">Disasters by Category</a>
-	<br>
-	<a href="/soundscapetest">Soundscapes</a>
+
+	<div class="container">
+		<h3>My Disasters</h3>
+		<form>
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Title</th>
+						<th>Coordinates</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="disaster" items="${disasters}">
+						<tr>
+							<td>${disaster.id}</td>
+							<td>${disaster.title}</td>
+							<td>${disaster.geometries}</td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</form>
+	</div>
 </body>
 </html>
