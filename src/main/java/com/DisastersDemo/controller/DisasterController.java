@@ -47,7 +47,7 @@ import com.DisastersDemo.service.nasa.NasaService;
  *
  */
 @Controller
-@SessionAttributes("user")
+@SessionAttributes({"user", "validEvents"})
 public class DisasterController {
 
 	@Value("${nasa.api_key}")
@@ -142,24 +142,36 @@ public class DisasterController {
 
 	@RequestMapping("/returnmydisasterlist")
 	public ModelAndView returnMyDisasterList(@RequestParam("usercat") String userCat,
-			@RequestParam("userstartdate") String userStartDate, @RequestParam("userenddate") String userEndDate) {
-
-		// Calculate number of days
-		String numDays = NasaService.getNumDays(userStartDate, userEndDate);
+			@RequestParam("userstartdate") String userStartDate, @RequestParam("userenddate") String userEndDate,
+			HttpSession session) {
 
 		RestTemplate restTemplate = NasaService.getEONetRestTemplate();
 		HttpEntity<String> httpEntity = NasaService.getEONetHttpEntity();
 		ResponseEntity<EventList> response = restTemplate
-				.exchange("https://eonet.sci.gsfc.nasa.gov/api/v2.1/categories/" + userCat + "?limit=50&days=" + numDays
-						+ "&source=InciWeb,EO&status=open", HttpMethod.GET, httpEntity, EventList.class);
+				.exchange(
+						"https://eonet.sci.gsfc.nasa.gov/api/v2.1/categories/" + userCat
+								+ "?limit=50&source=InciWeb,EO&status=open",
+						HttpMethod.GET, httpEntity, EventList.class);
 		EventList eventList = response.getBody();
 		ArrayList<Event> disasters = eventList.getEvents();
 		ArrayList<String> dates = NasaService.getDates(disasters);
 		ArrayList<LocalDate> localDates = NasaService.getLocalDates(dates, userStartDate, userEndDate);
 		String[] validDatesArray = NasaService.getValidDatesArray(localDates);
 		ArrayList<Event> validEvents = NasaService.getValidEvents(validDatesArray, disasters);
+		session.setAttribute("validEvents", validEvents);
 		return new ModelAndView("mydisasterlist", "disasters", validEvents);
+	}
 
+	@RequestMapping("/mycoordinates")
+	public ModelAndView returnMyCoordinates(HttpSession session) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Event> validEvents = (ArrayList<Event>) session.getAttribute("validEvents");
+		ArrayList<Double[]> coordinatesList = new ArrayList<>();
+		for (int i = 0; i < validEvents.size(); ++i) {
+			Double[] coordinates = validEvents.get(i).getGeometries().get(0).getCoordinates();
+			coordinatesList.add(coordinates);
+		}
+		return new ModelAndView("mycoordinates", "coordinateslist", coordinatesList);
 	}
 
 	// Testing last.fm API

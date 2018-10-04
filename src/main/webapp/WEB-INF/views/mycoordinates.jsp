@@ -12,30 +12,24 @@
 <link rel="stylesheet"
 	href="https://bootswatch.com/_assets/css/custom.min.css">
 <link rel="stylesheet" href="/style.css" />
-<title>My Disaster List</title>
+<title>Coordinates for Disasters</title>
 </head>
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
-
 	<div class="container">
-		<h3>My Disasters</h3>
+		<h3>My Coordinates</h3>
 		<form>
 			<table>
 				<thead>
 					<tr>
-						<th>ID</th>
-						<th>Title</th>
 						<th>Coordinates</th>
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="disaster" items="${disasters}">
+					<c:forEach var="coordinates" items="${coordinateslist}">
 						<tr>
-							<td>${disaster.id}</td>
-							<td>${disaster.title}</td>
-							<td>${disaster.geometries}</td>
-							<td><a href="/mycoordinates">See the Coordinates</a></td>
+							<td>${coordinates[0]}, ${coordinates[1]}</td>
 						</tr>
 					</c:forEach>
 				</tbody>
