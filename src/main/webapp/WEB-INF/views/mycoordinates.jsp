@@ -36,5 +36,10 @@
 			</table>
 		</form>
 	</div>
+	<div id="floating-panel">
+		<form action="sketchmydisasters">
+			<button>Sketch My Disasters</button>
+		</form>
+	</div>
 </body>
 </html>

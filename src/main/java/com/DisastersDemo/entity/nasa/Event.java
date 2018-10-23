@@ -9,6 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author
  *
  */
+/**
+ * @author benjamin.mcbrayer
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
 	@JsonProperty

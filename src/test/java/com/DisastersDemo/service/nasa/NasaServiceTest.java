@@ -1,12 +1,14 @@
 package com.DisastersDemo.service.nasa;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
 class NasaServiceTest {
 
-	// Tests for getNumDays()
+	// getNumDays()
 	@Test
 	void test1() {
 		String expected = "2191";
@@ -26,6 +28,22 @@ class NasaServiceTest {
 		String expected = "18510";
 		String actual = NasaService.getNumDays("1967-07-05", "2018-03-09");
 		assertEquals(expected, actual);
+	}
+
+	// getCoordinatesList()
+	@Test
+	void test4() {
+		ArrayList<Double[]> expected = new ArrayList<>();
+		Double[] a = { 1.0, 2.0 };
+		Double[] b = { 3.0, 4.0 };
+		Double[] c = { 5.0, 6.0 };
+		expected.add(a);
+		expected.add(b);
+		expected.add(c);
+		//ArrayList<Event> validEvents = new ArrayList<>();
+		//TODO: Get one Double[] and one Double[][].
+		//ArrayList<Double[]> actual = NasaService.getCoordinatesList(validEvents);
+		//assertEquals(expected, actual);
 	}
 
 }

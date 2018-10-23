@@ -1,74 +1,93 @@
+/**
+ * 
+ */
 package com.DisastersDemo.entity.nasa;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @author
+ * @author benjamin.mcbrayer
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Geometry {
-	@JsonProperty
-	private String date;
-	@JsonProperty
-	private String type;
-	@JsonProperty
-	private Double[] coordinates;
+	@JsonProperty("date")
+	String geodate;
+	@JsonProperty("type")
+	String geotype;
+	@JsonProperty("coordinates")
+	ArrayList<Object> geocoordinates;
 
+	/**
+	 * 
+	 */
 	public Geometry() {
 	}
 
 	/**
-	 * @return the date
+	 * @param geodate
+	 * @param geotype
+	 * @param geocoordinates
 	 */
-	public String getDate() {
-		return date;
+	public Geometry(String geodate, String geotype, ArrayList<Object> geocoordinates) {
+		this.geodate = geodate;
+		this.geotype = geotype;
+		this.geocoordinates = geocoordinates;
 	}
 
 	/**
-	 * @param date the date to set
+	 * @return the geodate
 	 */
-	public void setDate(String date) {
-		this.date = date;
+	public String getGeodate() {
+		return geodate;
 	}
 
 	/**
-	 * @return the type
+	 * @param geodate the geodate to set
 	 */
-	public String getType() {
-		return type;
+	public void setGeodate(String geodate) {
+		this.geodate = geodate;
 	}
 
 	/**
-	 * @param type the type to set
+	 * @return the geotype
 	 */
-	public void setType(String type) {
-		this.type = type;
+	public String getGeotype() {
+		return geotype;
 	}
 
 	/**
-	 * @return the coordinates
+	 * @param geotype the geotype to set
 	 */
-	public Double[] getCoordinates() {
-		return coordinates;
+	public void setGeotype(String geotype) {
+		this.geotype = geotype;
 	}
 
 	/**
-	 * @param coordinates the coordinates to set
+	 * @return the geocoordinates
 	 */
-	public void setCoordinates(Double[] coordinates) {
-		this.coordinates = coordinates;
+	public ArrayList<Object> getGeocoordinates() {
+		return geocoordinates;
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * @param geocoordinates the geocoordinates to set
+	 */
+	public void setGeocoordinates(ArrayList<Object> geocoordinates) {
+		this.geocoordinates = geocoordinates;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "Geometry [date=" + date + ", type=" + type + ", coordinates=" + Arrays.toString(coordinates) + "]";
+		return "Geometry [geodate=" + geodate + ", geotype=" + geotype + ", geocoordinates=" + geocoordinates + "]";
 	}
 
 }

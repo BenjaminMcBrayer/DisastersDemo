@@ -1,5 +1,6 @@
 package com.DisastersDemo.controller;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
@@ -11,6 +12,13 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.map.DefaultMapContext;
+import org.geotools.map.MapContext;
+import org.geotools.swing.JMapFrame;
+import org.geotools.swing.data.JFileDataStoreChooser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -34,6 +42,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.DisastersDemo.entity.User;
+import com.DisastersDemo.entity.google.GMarker;
 import com.DisastersDemo.entity.lastfm.JsonTracksWrapper;
 import com.DisastersDemo.entity.lastfm.Track;
 import com.DisastersDemo.entity.nasa.Event;
@@ -46,8 +55,9 @@ import com.DisastersDemo.service.nasa.NasaService;
  * @author
  *
  */
+@SuppressWarnings("deprecation")
 @Controller
-@SessionAttributes({"user", "validEvents"})
+@SessionAttributes({ "user", "validEvents", "coordinatesList" })
 public class DisasterController {
 
 	@Value("${nasa.api_key}")
@@ -113,20 +123,15 @@ public class DisasterController {
 		return new ModelAndView("disastertest", "events", events);
 	}
 
+	// TODO: Convert to JUnit Test Case
 	@RequestMapping("/disastercategorytest")
 	public ModelAndView showMeTheDisastersByCategory() {
 		RestTemplate restTemplate = NasaService.getEONetRestTemplate();
 		HttpEntity<String> httpEntity = NasaService.getEONetHttpEntity();
-		String userCat = "8";
+		String userCat = "12";
 		String userStartDate = "2016-04-12";
 		String userEndDate = "2018-07-15";
-		ResponseEntity<EventList> response = restTemplate
-				.exchange(
-						"https://eonet.sci.gsfc.nasa.gov/api/v2.1/categories/" + userCat
-								+ "?limit=50&source=InciWeb,EO&status=open",
-						HttpMethod.GET, httpEntity, EventList.class);
-		EventList eventList = response.getBody();
-		ArrayList<Event> disasters = eventList.getEvents();
+		ArrayList<Event> disasters = NasaService.getDisasters(userCat, restTemplate, httpEntity);
 		ArrayList<String> dates = NasaService.getDates(disasters);
 		ArrayList<LocalDate> localDates = NasaService.getLocalDates(dates, userStartDate, userEndDate);
 		String[] validDatesArray = NasaService.getValidDatesArray(localDates);
@@ -144,16 +149,9 @@ public class DisasterController {
 	public ModelAndView returnMyDisasterList(@RequestParam("usercat") String userCat,
 			@RequestParam("userstartdate") String userStartDate, @RequestParam("userenddate") String userEndDate,
 			HttpSession session) {
-
 		RestTemplate restTemplate = NasaService.getEONetRestTemplate();
 		HttpEntity<String> httpEntity = NasaService.getEONetHttpEntity();
-		ResponseEntity<EventList> response = restTemplate
-				.exchange(
-						"https://eonet.sci.gsfc.nasa.gov/api/v2.1/categories/" + userCat
-								+ "?limit=50&source=InciWeb,EO&status=open",
-						HttpMethod.GET, httpEntity, EventList.class);
-		EventList eventList = response.getBody();
-		ArrayList<Event> disasters = eventList.getEvents();
+		ArrayList<Event> disasters = NasaService.getDisasters(userCat, restTemplate, httpEntity);
 		ArrayList<String> dates = NasaService.getDates(disasters);
 		ArrayList<LocalDate> localDates = NasaService.getLocalDates(dates, userStartDate, userEndDate);
 		String[] validDatesArray = NasaService.getValidDatesArray(localDates);
@@ -166,12 +164,59 @@ public class DisasterController {
 	public ModelAndView returnMyCoordinates(HttpSession session) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Event> validEvents = (ArrayList<Event>) session.getAttribute("validEvents");
-		ArrayList<Double[]> coordinatesList = new ArrayList<>();
-		for (int i = 0; i < validEvents.size(); ++i) {
-			Double[] coordinates = validEvents.get(i).getGeometries().get(0).getCoordinates();
-			coordinatesList.add(coordinates);
-		}
+		ArrayList<Object> coordinatesList = NasaService.getCoordinatesList(validEvents);
+		session.setAttribute("coordinatesList", coordinatesList);
 		return new ModelAndView("mycoordinates", "coordinateslist", coordinatesList);
+	}
+
+	@RequestMapping("/mygmarkers")
+	public ModelAndView returnMyGMarkers(HttpSession session) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Event> validEvents = (ArrayList<Event>) session.getAttribute("validEvents");
+		ArrayList<GMarker> gMarkers = new ArrayList<>();
+		GMarker gMarker;
+		for (Event validEvent : validEvents) {
+			if (validEvent.getGeometries().get(0).getGeotype().equals("Point")) {
+				gMarker = NasaService.getPointGMarker(validEvent);
+				gMarkers.add(gMarker);
+			} else if (validEvent.getGeometries().get(0).getGeotype().equals("Polygon")) {
+				String s = validEvent.getGeometries().get(0).getGeocoordinates().get(0).toString();
+				String[] polyCoordinates = NasaService.getPolyCoordinates(s);
+				ArrayList<GMarker> temp = NasaService.getPolygonGMarkers(polyCoordinates, validEvent);
+				for (GMarker gM : temp) {
+					gMarkers.add(gM);
+				}
+			}
+		}
+		session.setAttribute("gmarkers", gMarkers);
+		return new ModelAndView("mygmarkers", "gmarkers", gMarkers);
+
+	}
+
+	@RequestMapping("/sketchmydisasters")
+	public ModelAndView sketchMyDisasters(HttpSession session) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Object> coordinatesList = (ArrayList<Object>) session.getAttribute("coordinatesList");
+		return new ModelAndView("googlemapstest", "coordinateslist", coordinatesList);
+	}
+
+	// Testing geotools.
+	@RequestMapping("/showTestMap")
+	public ModelAndView geotoolsTest() throws Exception {
+		File file = JFileDataStoreChooser.showOpenFile("shp", null);
+		if (file == null) {
+			return null;
+		}
+		FileDataStore store = FileDataStoreFinder.getDataStore(file);
+		SimpleFeatureSource featureSource = store.getFeatureSource();
+
+		MapContext map = new DefaultMapContext();
+		map.setTitle("Quickstart");
+		map.addLayer(featureSource, null);
+
+		JMapFrame.showMap(map);
+
+		return new ModelAndView("geotoolstest", "geotoolstest", "This is the geotools test page.");
 	}
 
 	// Testing last.fm API
@@ -184,11 +229,8 @@ public class DisasterController {
 	public ModelAndView submitLastFMSearch(@RequestParam("tag") String tag) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-
 		HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-
 		RestTemplate restTemplate = new RestTemplate();
-
 		ResponseEntity<JsonTracksWrapper> response = restTemplate
 				.exchange("http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag=" + tag + "&limit=5&api_key="
 						+ lastFMKey + "&format=json", HttpMethod.GET, entity, JsonTracksWrapper.class);
