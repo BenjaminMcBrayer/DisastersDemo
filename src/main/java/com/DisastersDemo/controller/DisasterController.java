@@ -76,7 +76,9 @@ public class DisasterController {
 
 	@Autowired
 	UsersRepository uR;
-
+	
+	ArrayList<Event> validEventsField = new ArrayList<>();
+	
 	// TODO: Create home page
 	@RequestMapping("/")
 	public ModelAndView index() {
@@ -157,6 +159,7 @@ public class DisasterController {
 		String[] validDatesArray = NasaService.getValidDatesArray(localDates);
 		ArrayList<Event> validEvents = NasaService.getValidEvents(validDatesArray, disasters);
 		session.setAttribute("validEvents", validEvents);
+		validEventsField = validEvents;
 		return new ModelAndView("mydisasterlist", "disasters", validEvents);
 	}
 
@@ -171,8 +174,10 @@ public class DisasterController {
 
 	@RequestMapping("/mygmarkers")
 	public ModelAndView returnMyGMarkers(HttpSession session) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Event> validEvents = (ArrayList<Event>) session.getAttribute("validEvents");
+//		@SuppressWarnings("unchecked")
+//		ArrayList<Event> validEvents = (ArrayList<Event>) session.getAttribute("validEvents");
+		ArrayList<Event> validEvents = validEventsField;
+		System.out.println("TEST: " + validEventsField);
 		ArrayList<GMarker> gMarkers = new ArrayList<>();
 		GMarker gMarker;
 		for (Event validEvent : validEvents) {
@@ -189,6 +194,7 @@ public class DisasterController {
 			}
 		}
 		session.setAttribute("gmarkers", gMarkers);
+		System.out.println(gMarkers);
 		return new ModelAndView("mygmarkers", "gmarkers", gMarkers);
 
 	}
