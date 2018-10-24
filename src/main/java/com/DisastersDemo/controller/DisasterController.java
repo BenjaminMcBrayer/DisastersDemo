@@ -203,7 +203,16 @@ public class DisasterController {
 	public ModelAndView sketchMyDisasters(HttpSession session) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Object> coordinatesList = (ArrayList<Object>) session.getAttribute("coordinatesList");
-		return new ModelAndView("googlemapstest", "coordinateslist", coordinatesList);
+		
+		return new ModelAndView("googlemapstest", "gmarkers", coordinatesList);
+	}
+	
+	@RequestMapping("/sketchmygmarkers")
+	public ModelAndView sketchMyGMarkers(HttpSession session) {
+		@SuppressWarnings("unchecked")
+		ArrayList<GMarker> gMarkers = (ArrayList<GMarker>) session.getAttribute("gmarkers");
+		System.out.println("WORKS? " + gMarkers);
+		return new ModelAndView("googlemapstest", "gmarkers", gMarkers);
 	}
 
 	// Testing geotools.
