@@ -129,8 +129,8 @@ public class NasaService {
 	public static GMarker getPointGMarker(Event e) {
 		GMarker gMarker = new GMarker();
 		gMarker.setName(e.getTitle());
-		gMarker.setLat((Double) e.getGeometries().get(0).getGeocoordinates().get(0));
-		gMarker.setLng((Double) e.getGeometries().get(0).getGeocoordinates().get(1));
+		gMarker.setLat((Double) e.getGeometries().get(0).getGeocoordinates().get(1));
+		gMarker.setLng((Double) e.getGeometries().get(0).getGeocoordinates().get(0));
 		return gMarker;
 	}
 	
@@ -147,7 +147,7 @@ public class NasaService {
 		setPolygonGMarkerNames(polyCoordinates, e, temp);
 		ArrayList<Double> latitudes = getPolygonGMarkerLatitudes(polyCoordinates);				
 		ArrayList<Double> longitudes = getPolygonGMarkerLongitudes(polyCoordinates);
-		setPolygonGMarkerLatsAndLngs(temp, latitudes, longitudes);
+		setPolygonGMarkerLatsAndLngs(temp, longitudes, latitudes);
 		return temp;
 	}
 
