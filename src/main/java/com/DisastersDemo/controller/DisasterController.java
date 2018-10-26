@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -57,7 +56,7 @@ import com.DisastersDemo.service.nasa.NasaService;
  */
 @SuppressWarnings("deprecation")
 @Controller
-@SessionAttributes({ "user", "validEvents", "coordinatesList" })
+@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers"})
 public class DisasterController {
 
 	@Value("${nasa.api_key}")
@@ -65,14 +64,6 @@ public class DisasterController {
 
 	@Value("${lastfm.api_key}")
 	private String lastFMKey;
-
-	@Value("${spotify.client_id")
-	private static String spotifyId;
-
-	@Value("${spotify.client_secret")
-	private static String spotifySecret;
-
-	private static final String client_credentials = spotifyId + ":" + spotifySecret;
 
 	@Autowired
 	UsersRepository uR;
@@ -113,6 +104,7 @@ public class DisasterController {
 	}
 
 	// Testing NASA API
+	// TODO: Convert to JUnit Test Case
 	@RequestMapping("/disastertest")
 	public ModelAndView showMeTheDisasters() {
 		RestTemplate restTemplate = NasaService.getEONetRestTemplate();
@@ -272,14 +264,14 @@ public class DisasterController {
 
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
 
-		byte[] credentialsAsBytes = client_credentials.getBytes();
-		byte[] base64EncodedCredentialsAsBytes = Base64.encodeBase64(credentialsAsBytes);
-		String base64EncodedCredentials = new String(base64EncodedCredentialsAsBytes);
+		//byte[] credentialsAsBytes = client_credentials.getBytes();
+		//byte[] base64EncodedCredentialsAsBytes = Base64.encodeBase64(credentialsAsBytes);
+		//String base64EncodedCredentials = new String(base64EncodedCredentialsAsBytes);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED.toString());
 		headers.add("Accept", MediaType.APPLICATION_JSON.toString());
-		headers.add("Authorization", "Basic " + base64EncodedCredentials);
+		//headers.add("Authorization", "Basic " + base64EncodedCredentials);
 
 		MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<String, String>();
 		String grantType = "grant_type";
