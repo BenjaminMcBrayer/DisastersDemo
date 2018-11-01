@@ -17,9 +17,10 @@
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
-	<form action="getToken" method="post"> 
+	<form action="/" method="post"> 
 		<input	type="submit" value="Submit"></input>
 	</form>
+	<a href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback">Click here, please.</a>
 </head>
 <body>
 

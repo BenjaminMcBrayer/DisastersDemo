@@ -1,18 +1,10 @@
 package com.DisastersDemo.controller;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpSession;
 
-import org.geotools.data.FileDataStore;
-import org.geotools.data.FileDataStoreFinder;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.map.DefaultMapContext;
-import org.geotools.map.MapContext;
-import org.geotools.swing.JMapFrame;
-import org.geotools.swing.data.JFileDataStoreChooser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -20,11 +12,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -39,7 +31,6 @@ import com.DisastersDemo.entity.lastfm.JsonTracksWrapper;
 import com.DisastersDemo.entity.lastfm.Track;
 import com.DisastersDemo.entity.nasa.Event;
 import com.DisastersDemo.entity.nasa.EventList;
-import com.DisastersDemo.entity.spotify.JsonSpotifyTokenWrapper;
 import com.DisastersDemo.repo.UsersRepository;
 import com.DisastersDemo.service.nasa.NasaService;
 
@@ -47,7 +38,6 @@ import com.DisastersDemo.service.nasa.NasaService;
  * @author
  *
  */
-@SuppressWarnings("deprecation")
 @EnableOAuth2Client
 @Controller
 @SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers" })
@@ -58,46 +48,7 @@ public class DisasterController {
 
 	@Value("${lastfm.api_key}")
 	private String lastFMKey;
-
-	// Testing Spotify
-	@RequestMapping("spotifytest")
-	public String spotifyTest() {
-		return "spotifytest";
-	}
-
-	// FIXME
-	@ResponseBody
-	public ModelAndView getSpotifyToken() {
-		/*CloseableHttpClient httpClient = HttpClients.custom().setSSLHostnameVerifier(new NoopHostnameVerifier())
-				.build();
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		requestFactory.setHttpClient(httpClient);*/
-		
-		//OAuth2RestTemplate restTemplate = new OAuth2RestTemplate(spotify(), OAuth2ClientContext oauth2ClientContext);
-
-		//restTemplate.setMessageConverters(Arrays.asList(new MappingJackson2HttpMessageConverter()));
-		DefaultOAuth2ClientContext clientContext = new DefaultOAuth2ClientContext();
-		
-		//RemoteResourceConfiguration.restTemplate(clientContext);
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Basic " + RemoteResourceConfiguration.getClientCredentials());
-
-		String requestBody = "grant_type=client_credentials";
-		
-		HttpEntity<?> entity = new HttpEntity<Object>(requestBody, headers);
-		
-		JsonSpotifyTokenWrapper response = RemoteResourceConfiguration.restTemplate(clientContext).postForObject("https://accounts.spotify.com/api/token", entity,
-				JsonSpotifyTokenWrapper.class);
-		System.out.println(response);
-		return new ModelAndView("spotifytestresults", "token", response);
-	}
-
-	@RequestMapping("/spotifyplaybutton")
-	public String spotifyPlayButton() {
-		return "spotifyplaybutton";
-	}
-
+	
 	@Autowired
 	UsersRepository uR;
 
@@ -240,25 +191,6 @@ public class DisasterController {
 		return new ModelAndView("googlemapstest", "gmarkers", gMarkers);
 	}
 
-	// Testing geotools.
-	@RequestMapping("/showTestMap")
-	public ModelAndView geotoolsTest() throws Exception {
-		File file = JFileDataStoreChooser.showOpenFile("shp", null);
-		if (file == null) {
-			return null;
-		}
-		FileDataStore store = FileDataStoreFinder.getDataStore(file);
-		SimpleFeatureSource featureSource = store.getFeatureSource();
-
-		MapContext map = new DefaultMapContext();
-		map.setTitle("Quickstart");
-		map.addLayer(featureSource, null);
-
-		JMapFrame.showMap(map);
-
-		return new ModelAndView("geotoolstest", "geotoolstest", "This is the geotools test page.");
-	}
-
 	// Testing last.fm API
 	@RequestMapping("soundscapetest")
 	public String showLastFMSearch() {
@@ -284,6 +216,45 @@ public class DisasterController {
 	public String googleMapsTest() {
 		return "googlemapstest";
 	}
+	
+	/*@Autowired
+	private OAuth2RestTemplate spotifyRestTemplate;*/
+	
+	// Testing Spotify
+	@RequestMapping("spotifytest")
+	public String spotifyTest() {
+		return "spotifytest";
+	}
+	
+	@RequestMapping(value = "/spotifytest", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	public @ResponseBody ModelAndView getSpotifyToken() {
+		
+		/*HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Basic " + RemoteResourceConfiguration.getClientCredentials());
+		
+		String requestBody = "grant_type=client_credentials";
+		
+		HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+		
+		spotifyRestTemplate.postForObject("https://accounts.spotify.com/api/token",
+				entity, JsonSpotifyTokenWrapper.class);
+		
+		String token = spotifyRestTemplate.getAccessToken().getValue();
+		System.out.println("Token: " + token);*/
+		RemoteResourceConfiguration.clientCredentials_Sync();
+		return new ModelAndView("redirect:/");
+	}
+	
+	@RequestMapping("/spotifycallback")
+	public ModelAndView spotifyCallback(@RequestParam("code") String code) {
+		System.out.println(code);
+		return new ModelAndView("redirect:/sketcher");
+	}
+	
+	@RequestMapping("/spotifyplaybutton")
+	public String spotifyPlayButton() {
+		return "spotifyplaybutton";
+	}
 
 	// Integration Testing
 	@RequestMapping("/httprequesttest")
@@ -296,3 +267,4 @@ public class DisasterController {
 		return "Hello World";
 	}
 }
+

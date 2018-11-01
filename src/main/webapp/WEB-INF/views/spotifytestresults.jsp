@@ -17,6 +17,5 @@
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
-	<p>${ token }</p>
 </body>
 </html>
