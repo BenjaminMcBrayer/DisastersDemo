@@ -12,11 +12,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -24,7 +22,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.DisastersDemo.RemoteResourceConfiguration;
 import com.DisastersDemo.entity.User;
 import com.DisastersDemo.entity.google.GMarker;
 import com.DisastersDemo.entity.lastfm.JsonTracksWrapper;
@@ -38,7 +35,6 @@ import com.DisastersDemo.service.nasa.NasaService;
  * @author
  *
  */
-@EnableOAuth2Client
 @Controller
 @SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers" })
 public class DisasterController {
@@ -48,7 +44,7 @@ public class DisasterController {
 
 	@Value("${lastfm.api_key}")
 	private String lastFMKey;
-	
+
 	@Autowired
 	UsersRepository uR;
 
@@ -150,8 +146,6 @@ public class DisasterController {
 
 	@RequestMapping("/mygmarkers")
 	public ModelAndView returnMyGMarkers(HttpSession session) {
-//		@SuppressWarnings("unchecked")
-//		ArrayList<Event> validEvents = (ArrayList<Event>) session.getAttribute("validEvents");
 		ArrayList<Event> validEvents = validEventsField;
 		System.out.println("TEST: " + validEventsField);
 		ArrayList<GMarker> gMarkers = new ArrayList<>();
@@ -173,14 +167,6 @@ public class DisasterController {
 		System.out.println(gMarkers);
 		return new ModelAndView("mygmarkers", "gmarkers", gMarkers);
 
-	}
-
-	@RequestMapping("/sketchmydisasters")
-	public ModelAndView sketchMyDisasters(HttpSession session) {
-		@SuppressWarnings("unchecked")
-		ArrayList<Object> coordinatesList = (ArrayList<Object>) session.getAttribute("coordinatesList");
-
-		return new ModelAndView("googlemapstest", "gmarkers", coordinatesList);
 	}
 
 	@RequestMapping("/sketchmygmarkers")
@@ -216,41 +202,19 @@ public class DisasterController {
 	public String googleMapsTest() {
 		return "googlemapstest";
 	}
-	
-	/*@Autowired
-	private OAuth2RestTemplate spotifyRestTemplate;*/
-	
+
 	// Testing Spotify
 	@RequestMapping("spotifytest")
 	public String spotifyTest() {
 		return "spotifytest";
 	}
-	
-	@RequestMapping(value = "/spotifytest", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-	public @ResponseBody ModelAndView getSpotifyToken() {
-		
-		/*HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Basic " + RemoteResourceConfiguration.getClientCredentials());
-		
-		String requestBody = "grant_type=client_credentials";
-		
-		HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-		
-		spotifyRestTemplate.postForObject("https://accounts.spotify.com/api/token",
-				entity, JsonSpotifyTokenWrapper.class);
-		
-		String token = spotifyRestTemplate.getAccessToken().getValue();
-		System.out.println("Token: " + token);*/
-		RemoteResourceConfiguration.clientCredentials_Sync();
-		return new ModelAndView("redirect:/");
-	}
-	
+
 	@RequestMapping("/spotifycallback")
 	public ModelAndView spotifyCallback(@RequestParam("code") String code) {
 		System.out.println(code);
 		return new ModelAndView("redirect:/sketcher");
 	}
-	
+
 	@RequestMapping("/spotifyplaybutton")
 	public String spotifyPlayButton() {
 		return "spotifyplaybutton";
@@ -267,4 +231,3 @@ public class DisasterController {
 		return "Hello World";
 	}
 }
-

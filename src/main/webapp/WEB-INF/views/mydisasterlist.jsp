@@ -39,7 +39,6 @@
 					</c:forEach>
 				</tbody>
 			</table>
-			<a href="/mycoordinates">See the Coordinates</a>
 			<a href="/mygmarkers">See the GMarkers</a>
 		</form>
 	</div>
