@@ -8,24 +8,17 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.DisastersDemo.entity.User;
 import com.DisastersDemo.entity.google.GMarker;
-import com.DisastersDemo.entity.lastfm.JsonTracksWrapper;
-import com.DisastersDemo.entity.lastfm.Track;
 import com.DisastersDemo.entity.nasa.Event;
 import com.DisastersDemo.entity.nasa.EventList;
 import com.DisastersDemo.repo.UsersRepository;
@@ -36,12 +29,11 @@ import com.DisastersDemo.service.nasa.NasaService;
  *
  */
 @Controller
-@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers" })
+@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers", "accessToken" })
 public class DisasterController {
 
 	@Value("${nasa.api_key}")
 	private String nasaKey;
-
 	@Value("${lastfm.api_key}")
 	private String lastFMKey;
 
@@ -54,33 +46,6 @@ public class DisasterController {
 	@RequestMapping("/")
 	public ModelAndView index() {
 		return new ModelAndView("index", "test", "Hello, World!");
-	}
-
-	// Login, logout, sessions
-	@RequestMapping("/login")
-	public ModelAndView showLoginForm() {
-		return new ModelAndView("login");
-	}
-
-	@PostMapping("/login")
-	public ModelAndView submitLoginForm(@RequestParam("username") String username,
-			@RequestParam("password") String password, HttpSession session, RedirectAttributes redir) {
-		User user = uR.findByUsername(username);
-		if (user == null || !password.equals(user.getPassword())) {
-			ModelAndView mv = new ModelAndView("login");
-			mv.addObject("message", "Incorrect username or password.");
-			return mv;
-		}
-		session.setAttribute("user", user);
-		redir.addFlashAttribute("message", "Logged in.");
-		return new ModelAndView("redirect:/");
-	}
-
-	@RequestMapping("/logout")
-	public ModelAndView logout(HttpSession session, RedirectAttributes redir) {
-		session.invalidate();
-		redir.addFlashAttribute("message", "Logged out.");
-		return new ModelAndView("redirect:/");
 	}
 
 	// Testing NASA API
@@ -147,7 +112,6 @@ public class DisasterController {
 	@RequestMapping("/mygmarkers")
 	public ModelAndView returnMyGMarkers(HttpSession session) {
 		ArrayList<Event> validEvents = validEventsField;
-		System.out.println("TEST: " + validEventsField);
 		ArrayList<GMarker> gMarkers = new ArrayList<>();
 		GMarker gMarker;
 		for (Event validEvent : validEvents) {
@@ -166,35 +130,20 @@ public class DisasterController {
 		session.setAttribute("gmarkers", gMarkers);
 		System.out.println(gMarkers);
 		return new ModelAndView("mygmarkers", "gmarkers", gMarkers);
-
 	}
 
 	@RequestMapping("/sketchmygmarkers")
 	public ModelAndView sketchMyGMarkers(HttpSession session) {
 		@SuppressWarnings("unchecked")
 		ArrayList<GMarker> gMarkers = (ArrayList<GMarker>) session.getAttribute("gmarkers");
-		System.out.println("WORKS? " + gMarkers);
 		return new ModelAndView("googlemapstest", "gmarkers", gMarkers);
 	}
 
-	// Testing last.fm API
-	@RequestMapping("soundscapetest")
-	public String showLastFMSearch() {
-		return "soundscapetest";
-	}
-
-	@RequestMapping("/searchbytag")
-	public ModelAndView submitLastFMSearch(@RequestParam("tag") String tag) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<JsonTracksWrapper> response = restTemplate
-				.exchange("http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag=" + tag + "&limit=5&api_key="
-						+ lastFMKey + "&format=json", HttpMethod.GET, entity, JsonTracksWrapper.class);
-		JsonTracksWrapper tracksWrapper = response.getBody();
-		ArrayList<Track> tracks = tracksWrapper.getTracklist().getTracks();
-		return new ModelAndView("/soundscapetestresults", "tracks", tracks);
+	@RequestMapping("/sketchmygmarkers2")
+	public ModelAndView sketchMyGMarkers2(HttpSession session) {
+		@SuppressWarnings("unchecked")
+		ArrayList<GMarker> gMarkers = (ArrayList<GMarker>) session.getAttribute("gmarkers");
+		return new ModelAndView("googlemapstest2", "gmarkers", gMarkers);
 	}
 
 	// Testing Google Maps
@@ -207,12 +156,6 @@ public class DisasterController {
 	@RequestMapping("spotifytest")
 	public String spotifyTest() {
 		return "spotifytest";
-	}
-
-	@RequestMapping("/spotifycallback")
-	public ModelAndView spotifyCallback(@RequestParam("code") String code) {
-		System.out.println(code);
-		return new ModelAndView("redirect:/sketcher");
 	}
 
 	@RequestMapping("/spotifyplaybutton")

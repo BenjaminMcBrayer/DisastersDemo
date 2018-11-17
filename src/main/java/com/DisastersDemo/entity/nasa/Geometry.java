@@ -21,9 +21,6 @@ public class Geometry {
 	@JsonProperty("coordinates")
 	ArrayList<Object> geocoordinates;
 
-	/**
-	 * 
-	 */
 	public Geometry() {
 	}
 

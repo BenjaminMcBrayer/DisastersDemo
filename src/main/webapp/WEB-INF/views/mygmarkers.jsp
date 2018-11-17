@@ -45,5 +45,10 @@
 			<button>Sketch My Disasters</button>
 		</form>
 	</div>
+		<div id="floating-panel">
+		<form action="sketchmygmarkers2">
+			<button>Sketch My Disasters Again</button>
+		</form>
+	</div>
 </body>
 </html>

@@ -12,7 +12,7 @@
 <link rel="stylesheet"
 	href="https://bootswatch.com/_assets/css/custom.min.css">
 <link rel="stylesheet" href="/style.css" />
-<title>Insert title here</title>
+<title>Event Sketcher</title>
 </head>
 <body>
 	<%@include file="partials/header.jsp"%>

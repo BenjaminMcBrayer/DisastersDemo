@@ -23,5 +23,7 @@
 	<a href="disastercategorytest">Disasters by Category</a>
 	<br>
 	<a href="/soundscapetest">Soundscapes</a>
+	<br>
+	<a href="sketcher">Sketcher</a>
 </body>
 </html>
