@@ -20,7 +20,7 @@
 	<form action="/" method="post"> 
 		<input	type="submit" value="Submit"></input>
 	</form>
-	<a href="https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=http://localhost:8080/spotifycallback">Click here, please.</a>
+	<a href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback">Click here, please.</a>
 </head>
 <body>
 

@@ -17,5 +17,8 @@
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
+	
+	${pagingobject}
+	
 </body>
 </html>

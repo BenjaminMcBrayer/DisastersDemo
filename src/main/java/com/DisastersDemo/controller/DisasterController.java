@@ -23,6 +23,7 @@ import com.DisastersDemo.entity.nasa.Event;
 import com.DisastersDemo.entity.nasa.EventList;
 import com.DisastersDemo.repo.UsersRepository;
 import com.DisastersDemo.service.nasa.NasaService;
+import com.DisastersDemo.utility.Utility;
 
 /**
  * @author
@@ -52,8 +53,8 @@ public class DisasterController {
 	// TODO: Convert to JUnit Test Case
 	@RequestMapping("/disastertest")
 	public ModelAndView showMeTheDisasters() {
-		RestTemplate restTemplate = NasaService.getEONetRestTemplate();
-		HttpEntity<String> httpEntity = NasaService.getEONetHttpEntity();
+		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
+		HttpEntity<String> httpEntity = Utility.getHttpEntity();
 		ResponseEntity<EventList> response = restTemplate.exchange(
 				"https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=5&days=20&source=InciWeb,EO&status=open",
 				HttpMethod.GET, httpEntity, EventList.class);
@@ -65,8 +66,8 @@ public class DisasterController {
 	// TODO: Convert to JUnit Test Case
 	@RequestMapping("/disastercategorytest")
 	public ModelAndView showMeTheDisastersByCategory() {
-		RestTemplate restTemplate = NasaService.getEONetRestTemplate();
-		HttpEntity<String> httpEntity = NasaService.getEONetHttpEntity();
+		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
+		HttpEntity<String> httpEntity = Utility.getHttpEntity();
 		String userCat = "12";
 		String userStartDate = "2016-04-12";
 		String userEndDate = "2018-07-15";
@@ -88,8 +89,8 @@ public class DisasterController {
 	public ModelAndView returnMyDisasterList(@RequestParam("usercat") String userCat,
 			@RequestParam("userstartdate") String userStartDate, @RequestParam("userenddate") String userEndDate,
 			HttpSession session) {
-		RestTemplate restTemplate = NasaService.getEONetRestTemplate();
-		HttpEntity<String> httpEntity = NasaService.getEONetHttpEntity();
+		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
+		HttpEntity<String> httpEntity = Utility.getHttpEntity();
 		ArrayList<Event> disasters = NasaService.getDisasters(userCat, restTemplate, httpEntity);
 		ArrayList<String> dates = NasaService.getDates(disasters);
 		ArrayList<LocalDate> localDates = NasaService.getLocalDates(dates, userStartDate, userEndDate);
@@ -150,12 +151,6 @@ public class DisasterController {
 	@RequestMapping("/googlemapstest")
 	public String googleMapsTest() {
 		return "googlemapstest";
-	}
-
-	// Testing Spotify
-	@RequestMapping("spotifytest")
-	public String spotifyTest() {
-		return "spotifytest";
 	}
 
 	@RequestMapping("/spotifyplaybutton")

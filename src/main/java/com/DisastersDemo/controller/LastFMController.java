@@ -1,6 +1,7 @@
 package com.DisastersDemo.controller;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.servlet.http.HttpSession;
 
@@ -45,5 +46,14 @@ public class LastFMController {
 		ArrayList<Track> tracks = tracksWrapper.getTracklist().getTracks();
 		session.setAttribute("tracks", tracks);
 		return new ModelAndView("/soundscapetestresults", "tracks", tracks);
+	}
+	
+	public static String getRandomTrackName(HttpSession session) {
+		@SuppressWarnings("unchecked")
+		ArrayList<Track> tracks = (ArrayList<Track>) session.getAttribute("tracks");
+		int numTracks = 5;
+		Random trackRoller = new Random();
+		int trackNum = trackRoller.nextInt(numTracks);
+		return tracks.get(trackNum).getName();
 	}
 }
