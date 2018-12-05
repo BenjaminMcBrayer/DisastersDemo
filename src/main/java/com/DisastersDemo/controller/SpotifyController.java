@@ -43,7 +43,7 @@ public class SpotifyController {
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
+
 	// Testing Spotify
 	@RequestMapping("spotifytest")
 	public String spotifyTest() {
@@ -51,7 +51,8 @@ public class SpotifyController {
 	}
 
 	@RequestMapping("/spotifycallback")
-	public ModelAndView spotifyCallback(@RequestParam("code") String code, HttpSession session) throws URISyntaxException {
+	public ModelAndView spotifyCallback(@RequestParam("code") String code, HttpSession session)
+			throws URISyntaxException {
 		setCode(code);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -61,27 +62,29 @@ public class SpotifyController {
 		body.add("code", code);
 		body.add("redirect_uri", "http://localhost:8080/spotifycallback");
 		URI uri = new URI("https://accounts.spotify.com/api/token");
-		RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<MultiValueMap<String, String>>(body, headers, HttpMethod.POST, uri);
+		RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<MultiValueMap<String, String>>(body,
+				headers, HttpMethod.POST, uri);
 		RestTemplate rT = new RestTemplate();
-		ResponseEntity<JsonSpotifyTokenWrapper> response = rT.exchange(request,
-				JsonSpotifyTokenWrapper.class);
+		ResponseEntity<JsonSpotifyTokenWrapper> response = rT.exchange(request, JsonSpotifyTokenWrapper.class);
 		String accessToken = response.getBody().getAccess_token();
 		System.out.println(accessToken);
 		session.setAttribute("accessToken", accessToken);
 		ModelAndView mv = new ModelAndView("redirect:/sketcher");
 		return mv;
 	}
-	
+
 	@RequestMapping("/spotifysearchtest")
 	public ModelAndView spotifySearchTest(HttpSession session) throws URISyntaxException {
-		URI uri = new URI("https://api.spotify.com/v1/search?query=dancing+queen&type=track&market=US&offset=0&limit=20");
+		URI uri = new URI(
+				"https://api.spotify.com/v1/search?query=dancing+queen&type=track&market=US&offset=0&limit=20");
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add("Accept", "application/json");
 		headers.add("Authorization", "Bearer " + session.getAttribute("accessToken"));
-		RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<MultiValueMap<String, String>>(null, headers, HttpMethod.GET, uri);
+		RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<MultiValueMap<String, String>>(null,
+				headers, HttpMethod.GET, uri);
 		RestTemplate rT = new RestTemplate();
 		ResponseEntity<SpotifySearchWrapper> response = rT.exchange(request, SpotifySearchWrapper.class);
-		return new ModelAndView("spotifytestresults", "pagingobject", response.getBody().getTracks().getItems().get(0));
+		return new ModelAndView("spotifytestresults", "trackObject", response.getBody().getTracks().getItems());
 	}
 }
