@@ -7,12 +7,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Tracks {
-	
+
 	@JsonProperty
 	private ArrayList<TrackObject> items;
 
 	public Tracks() {
-		
+
 	}
 
 	public Tracks(ArrayList<TrackObject> items) {
@@ -25,5 +25,10 @@ public class Tracks {
 
 	public void setItems(ArrayList<TrackObject> items) {
 		this.items = items;
+	}
+
+	@Override
+	public String toString() {
+		return "Tracks [items=" + items + "]";
 	}
 }

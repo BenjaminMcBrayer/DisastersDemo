@@ -56,7 +56,7 @@ public class DisasterController {
 		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
 		HttpEntity<String> httpEntity = Utility.getHttpEntity();
 		ResponseEntity<EventList> response = restTemplate.exchange(
-				"https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=5&days=20&source=InciWeb,EO&status=open",
+				"https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=5&source=InciWeb,EO&status=open",
 				HttpMethod.GET, httpEntity, EventList.class);
 		EventList eventList = response.getBody();
 		ArrayList<Event> events = eventList.getEvents();

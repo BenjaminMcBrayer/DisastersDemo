@@ -21,26 +21,24 @@
 <body>
 	<div class="container">
 		<h3>EONet Events by Category</h3>
-		<form>
-			<table>
-				<thead>
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Title</th>
+					<th>Coordinates</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="event" items="${events}">
 					<tr>
-						<th>ID</th>
-						<th>Title</th>
-						<th>Coordinates</th>
+						<td>${event.id}</td>
+						<td>${event.title}</td>
+						<td>${event.geometries}</td>
 					</tr>
-				</thead>
-				<tbody>
-					<c:forEach var="event" items="${events}">
-						<tr>
-							<td>${event.id}</td>
-							<td>${event.title}</td>
-							<td>${event.geometries}</td>
-						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
-		</form>
+				</c:forEach>
+			</tbody>
+		</table>
 	</div>
 </body>
 </html>

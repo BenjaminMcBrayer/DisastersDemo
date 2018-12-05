@@ -1,13 +1,11 @@
 package com.DisastersDemo.controller;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -24,13 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.DisastersDemo.entity.spotify.JsonSpotifyTokenWrapper;
 import com.DisastersDemo.entity.spotify.SpotifySearchWrapper;
-import com.DisastersDemo.utility.Utility;
 import com.wrapper.spotify.Base64;
-import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.SpotifyHttpManager;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 
 @Controller
 @SessionAttributes("accessToken")
@@ -51,11 +43,6 @@ public class SpotifyController {
 	public void setCode(String code) {
 		this.code = code;
 	}
-
-	private URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/spotifycallback");
-
-	private SpotifyApi spotifyApi = new SpotifyApi.Builder().setClientId(clientId).setClientSecret(clientSecret)
-			.setRedirectUri(redirectUri).build();
 	
 	// Testing Spotify
 	@RequestMapping("spotifytest")
@@ -85,38 +72,16 @@ public class SpotifyController {
 		return mv;
 	}
 	
-	@RequestMapping("/accesstokenrequest")
-	public ModelAndView accessTokenRequest() {
-		System.out.println(code);
-		System.out.println(clientId);
-		System.out.println(clientSecret);
-		System.out.println(redirectUri);
-		AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(getCode()).build();
-		try {
-			AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
-
-			// Set access and refresh token for further "spotifyApi" object usage
-			spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
-			spotifyApi.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
-
-			System.out.println("Expires in: " + authorizationCodeCredentials.getExpiresIn());
-		} catch (IOException | SpotifyWebApiException e) {
-			System.out.println(spotifyApi.getAccessToken());
-			System.out.println("Error: " + e.getMessage());
-		}
-		return new ModelAndView("spotifytoken", "message", spotifyApi.getAccessToken());
-	}
-
 	@RequestMapping("/spotifysearchtest")
-	public ModelAndView spotifySearchTest(HttpSession session) {
-		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
-		HttpEntity<String> httpEntity = Utility.getHttpEntity();
-		ResponseEntity<SpotifySearchWrapper> response = restTemplate
-				.exchange("https://api.spotify.com/v1/search?q=name:" + LastFMController.getRandomTrackName(session)
-						+ "&type=track", HttpMethod.GET, httpEntity, SpotifySearchWrapper.class);
-		SpotifySearchWrapper pagingObject = response.getBody();
-		// Tracks tracks = pagingObject.getTracks();
-		return new ModelAndView("spotifytestresults", "pagingobject", pagingObject);
+	public ModelAndView spotifySearchTest(HttpSession session) throws URISyntaxException {
+		URI uri = new URI("https://api.spotify.com/v1/search?query=dancing+queen&type=track&market=US&offset=0&limit=20");
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add("Accept", "application/json");
+		headers.add("Authorization", "Bearer " + session.getAttribute("accessToken"));
+		RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<MultiValueMap<String, String>>(null, headers, HttpMethod.GET, uri);
+		RestTemplate rT = new RestTemplate();
+		ResponseEntity<SpotifySearchWrapper> response = rT.exchange(request, SpotifySearchWrapper.class);
+		return new ModelAndView("spotifytestresults", "pagingobject", response.getBody().getTracks().getItems().get(0));
 	}
-
 }

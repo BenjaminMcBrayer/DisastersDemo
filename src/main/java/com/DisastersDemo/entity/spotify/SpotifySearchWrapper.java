@@ -23,4 +23,9 @@ public class SpotifySearchWrapper {
 	public void setTracks(Tracks tracks) {
 		this.tracks = tracks;
 	}
+
+	@Override
+	public String toString() {
+		return "SpotifySearchWrapper [tracks=" + tracks + "]";
+	}
 }

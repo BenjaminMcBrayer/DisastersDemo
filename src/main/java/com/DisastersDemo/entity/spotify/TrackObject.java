@@ -114,4 +114,13 @@ public class TrackObject {
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
+
+	@Override
+	public String toString() {
+		return "TrackObject [album=" + album + ", artists=" + artists + ", href=" + href + ", id=" + id + ", name="
+				+ name + ", is_local=" + is_local + ", is_playable=" + is_playable + ", popularity=" + popularity
+				+ ", uri=" + uri + "]";
+	}
+	
+	
 }
