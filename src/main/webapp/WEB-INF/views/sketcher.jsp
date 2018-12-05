@@ -17,7 +17,9 @@
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
-	<div><p>Access Token: ${ accessToken }</p></div>
+	<div>
+		<p>Access Token: ${ accessToken }</p>
+	</div>
 	<div class="container">
 		<form action="/returnmydisasterlist">
 			<select name="usercat">
@@ -34,16 +36,16 @@
 				<option value="12">Volcanoes</option>
 				<option value="13">Water Color</option>
 				<option value="8">Wildfires</option>
-			</select>
-			Enter start date: <input type="date" name="userstartdate"/>
-			Enter end date: <input type="date" name="userenddate"/>
-			<input type="submit" value="Submit"/>
+			</select> Enter start date: <input type="date" name="userstartdate" /> Enter
+			end date: <input type="date" name="userenddate" /> <input
+				type="submit" value="Submit" />
 		</form>
 	</div>
-	<div>
-	<a href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback">Login to Spotify.</a>
-	<a href="accesstokenrequest">Token</a>
-	<a href="spotifysearchtest">Spotify Search Results</a>
+	<div class=container>
+		<a
+			href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback">Login
+			to Spotify.</a> <br> <a href="spotifysearchtest">Spotify Search
+			Results</a>
 	</div>
 </body>
 </html>

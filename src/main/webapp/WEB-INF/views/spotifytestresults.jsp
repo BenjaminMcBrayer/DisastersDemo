@@ -22,8 +22,6 @@
 		<table>
 			<thead>
 				<tr>
-					<th>Album</th>
-					<th>Href</th>
 					<th>Name</th>
 					<th>Is Playable?</th>
 					<th>Popularity</th>
@@ -33,9 +31,7 @@
 			<tbody>
 				<c:forEach var="t" items="${trackObject}">
 					<tr>
-						<td>${t.album}</td>
 						<td>${t.name}</td>
-						<td>${t.href}</td>
 						<td>${t.is_playable}</td>
 						<td>${t.popularity}</td>
 						<td>${t.uri}</td>
