@@ -1,5 +1,7 @@
 package com.DisastersDemo.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -8,9 +10,14 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.DisastersDemo.entity.google.GMarker;
 import com.DisastersDemo.entity.nasa.Event;
 import com.DisastersDemo.entity.nasa.EventList;
+import com.DisastersDemo.entity.spotify.SpotifyCurrentlyPlayingContextWrapper;
 import com.DisastersDemo.repo.UsersRepository;
 import com.DisastersDemo.service.nasa.NasaService;
 import com.DisastersDemo.utility.Utility;
@@ -133,13 +141,25 @@ public class DisasterController {
 	}
 
 	@RequestMapping("/sketchmygmarkers")
-	public ModelAndView sketchMyGMarkers(HttpSession session) {
+	public ModelAndView sketchMyGMarkers(HttpSession session) throws URISyntaxException {
 		@SuppressWarnings("unchecked")
 		ArrayList<GMarker> gMarkers = (ArrayList<GMarker>) session.getAttribute("gmarkers");
-		LastFMController lFMC = new LastFMController();
-		lFMC.getLastFMTracks(session);
-		String randomTrackName = lFMC.getRandomTrackName();
-		
+		SpotifyController sC = new SpotifyController();
+		sC.setTrackURI(session);
+		String trackURI = sC.getTrackURI();
+		URI uri = new URI("https://api.spotify.com/v1/me/player/play");
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add("Accept", "application/json");
+		headers.add("Authorization", "Bearer " + session.getAttribute("accessToken"));
+		MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
+		body.add("context_uri", trackURI);
+		RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<MultiValueMap<String, String>>(body,
+				headers, HttpMethod.PUT, uri);
+		RestTemplate rT = new RestTemplate();
+		ResponseEntity<SpotifyCurrentlyPlayingContextWrapper> response = rT.exchange(request,
+				SpotifyCurrentlyPlayingContextWrapper.class);
+		System.out.println("Is_Playing = " + response.getBody().getIs_playing());
 		return new ModelAndView("googlemapstest", "gmarkers", gMarkers);
 	}
 

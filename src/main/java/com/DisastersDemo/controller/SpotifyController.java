@@ -79,6 +79,7 @@ public class SpotifyController {
 	@RequestMapping("")
 	public void setTrackURI(HttpSession session) throws URISyntaxException {
 		LastFMController lFMC = new LastFMController();
+		lFMC.setRandomTrackName(session);
 		String trackName = lFMC.getRandomTrackName();
 		URI uri = new URI(
 				"https://api.spotify.com/v1/search?query=" + trackName + "&type=track&market=US&offset=0&limit=20");
