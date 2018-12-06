@@ -50,20 +50,20 @@ public class DisasterController {
 	}
 
 	// Testing NASA API
-	// TODO: Convert to JUnit Test Case
+	// TODO: Convert to test case
 	@RequestMapping("/disastertest")
 	public ModelAndView showMeTheDisasters() {
 		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
 		HttpEntity<String> httpEntity = Utility.getHttpEntity();
 		ResponseEntity<EventList> response = restTemplate.exchange(
-				"https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=5&source=InciWeb,EO&status=open",
-				HttpMethod.GET, httpEntity, EventList.class);
+				"https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=5&source=InciWeb,EO&status=open", HttpMethod.GET,
+				httpEntity, EventList.class);
 		EventList eventList = response.getBody();
 		ArrayList<Event> events = eventList.getEvents();
 		return new ModelAndView("disastertest", "events", events);
 	}
 
-	// TODO: Convert to JUnit Test Case
+	// TODO: Convert to test case
 	@RequestMapping("/disastercategorytest")
 	public ModelAndView showMeTheDisastersByCategory() {
 		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
@@ -79,7 +79,6 @@ public class DisasterController {
 		return new ModelAndView("disastercategorytest", "events", validEvents);
 	}
 
-	// Sketching the disasters
 	@RequestMapping("/sketcher")
 	public String sketcher() {
 		return "sketcher";
@@ -137,6 +136,10 @@ public class DisasterController {
 	public ModelAndView sketchMyGMarkers(HttpSession session) {
 		@SuppressWarnings("unchecked")
 		ArrayList<GMarker> gMarkers = (ArrayList<GMarker>) session.getAttribute("gmarkers");
+		LastFMController lFMC = new LastFMController();
+		lFMC.getLastFMTracks(session);
+		String randomTrackName = lFMC.getRandomTrackName();
+		
 		return new ModelAndView("googlemapstest", "gmarkers", gMarkers);
 	}
 

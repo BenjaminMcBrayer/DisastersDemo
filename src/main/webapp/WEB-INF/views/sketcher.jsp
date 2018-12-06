@@ -36,16 +36,19 @@
 				<option value="12">Volcanoes</option>
 				<option value="13">Water Color</option>
 				<option value="8">Wildfires</option>
-			</select> Enter start date: <input type="date" name="userstartdate" /> Enter
-			end date: <input type="date" name="userenddate" /> <input
-				type="submit" value="Submit" />
+			</select> 
+			Enter start date: <input type="date" name="userstartdate" /> 
+			Enter end date: <input type="date" name="userenddate" /> 
+			Soundscape: <select name="tag">
+				<option value = "popular">Generic</option>
+				
+			</select>
+			<input type="submit" value="Submit" />
 		</form>
 	</div>
 	<div class=container>
-		<a
-			href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback">Login
-			to Spotify.</a> <br> <a href="spotifysearchtest">Spotify Search
-			Results</a>
+		<a href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback&scope=user-modify-playback-state">Login
+			to Spotify.</a> <br> <a href="spotifysearchtest">Spotify Search Results</a>
 	</div>
 </body>
 </html>

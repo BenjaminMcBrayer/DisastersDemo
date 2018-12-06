@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class JsonSpotifyTokenWrapper {
+public class SpotifyTokenWrapper {
 
 	@JsonProperty
 	private String access_token;
@@ -13,7 +13,7 @@ public class JsonSpotifyTokenWrapper {
 	@JsonProperty
 	private Number expires_in;
 
-	public JsonSpotifyTokenWrapper() {
+	public SpotifyTokenWrapper() {
 	}
 
 	/**
@@ -21,7 +21,7 @@ public class JsonSpotifyTokenWrapper {
 	 * @param token_type
 	 * @param expires_in
 	 */
-	public JsonSpotifyTokenWrapper(String access_token, String token_type, Number expires_in) {
+	public SpotifyTokenWrapper(String access_token, String token_type, Number expires_in) {
 		this.access_token = access_token;
 		this.token_type = token_type;
 		this.expires_in = expires_in;
