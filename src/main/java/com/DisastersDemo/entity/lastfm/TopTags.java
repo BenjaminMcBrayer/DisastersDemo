@@ -3,15 +3,14 @@ package com.DisastersDemo.entity.lastfm;
 import java.util.Arrays;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TopTags {
-
+	@JsonProperty("tag")
 	private Tag[] tags;
 
 	public TopTags() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public TopTags(Tag[] tags) {

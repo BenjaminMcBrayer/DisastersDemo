@@ -38,54 +38,16 @@ import com.DisastersDemo.utility.Utility;
  *
  */
 @Controller
-@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers", "accessToken" })
+@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers", "accessToken", "deviceId", "topTag" })
 public class DisasterController {
 
 	@Value("${nasa.api_key}")
 	private String nasaKey;
-	@Value("${lastfm.api_key}")
-	private String lastFMKey;
 
 	@Autowired
 	UsersRepository uR;
 
 	ArrayList<Event> validEventsField = new ArrayList<>();
-
-	// TODO: Create home page
-	@RequestMapping("/")
-	public ModelAndView index() {
-		return new ModelAndView("index", "test", "Hello, World!");
-	}
-
-	// Testing NASA API
-	// TODO: Convert to test case
-	@RequestMapping("/disastertest")
-	public ModelAndView showMeTheDisasters() {
-		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
-		HttpEntity<String> httpEntity = Utility.getHttpEntity();
-		ResponseEntity<EventList> response = restTemplate.exchange(
-				"https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=5&source=InciWeb,EO&status=open", HttpMethod.GET,
-				httpEntity, EventList.class);
-		EventList eventList = response.getBody();
-		ArrayList<Event> events = eventList.getEvents();
-		return new ModelAndView("disastertest", "events", events);
-	}
-
-	// TODO: Convert to test case
-	@RequestMapping("/disastercategorytest")
-	public ModelAndView showMeTheDisastersByCategory() {
-		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
-		HttpEntity<String> httpEntity = Utility.getHttpEntity();
-		String userCat = "12";
-		String userStartDate = "2016-04-12";
-		String userEndDate = "2018-07-15";
-		ArrayList<Event> disasters = NasaService.getDisasters(userCat, restTemplate, httpEntity);
-		ArrayList<String> dates = NasaService.getDates(disasters);
-		ArrayList<LocalDate> localDates = NasaService.getLocalDates(dates, userStartDate, userEndDate);
-		String[] validDatesArray = NasaService.getValidDatesArray(localDates);
-		ArrayList<Event> validEvents = NasaService.getValidEvents(validDatesArray, disasters);
-		return new ModelAndView("disastercategorytest", "events", validEvents);
-	}
 
 	@RequestMapping("/sketcher")
 	public String sketcher() {
@@ -145,8 +107,7 @@ public class DisasterController {
 		@SuppressWarnings("unchecked")
 		ArrayList<GMarker> gMarkers = (ArrayList<GMarker>) session.getAttribute("gmarkers");
 		SpotifyController sC = new SpotifyController();
-		sC.setTrackURI(session);
-		String trackURI = sC.getTrackURI();
+		String trackURI = sC.getTrackURI(session);
 		URI uri = new URI("https://api.spotify.com/v1/me/player/play");
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -160,14 +121,14 @@ public class DisasterController {
 		ResponseEntity<SpotifyCurrentlyPlayingContextWrapper> response = rT.exchange(request,
 				SpotifyCurrentlyPlayingContextWrapper.class);
 		System.out.println("Is_Playing = " + response.getBody().getIs_playing());
-		return new ModelAndView("googlemapstest", "gmarkers", gMarkers);
+		return new ModelAndView("googlemapstest", "gMarkers", gMarkers);
 	}
 
 	@RequestMapping("/sketchmygmarkers2")
 	public ModelAndView sketchMyGMarkers2(HttpSession session) {
 		@SuppressWarnings("unchecked")
 		ArrayList<GMarker> gMarkers = (ArrayList<GMarker>) session.getAttribute("gmarkers");
-		return new ModelAndView("googlemapstest2", "gmarkers", gMarkers);
+		return new ModelAndView("googlemapstest2", "gMarkers", gMarkers);
 	}
 
 	// Testing Google Maps
@@ -182,6 +143,42 @@ public class DisasterController {
 	}
 
 	// Integration Testing
+	// TODO: Create home page
+	@RequestMapping("/")
+	public ModelAndView index() {
+		return new ModelAndView("index", "test", "Hello, World!");
+	}
+
+	// Testing NASA API
+	// TODO: Convert to test case
+	@RequestMapping("/disastertest")
+	public ModelAndView showMeTheDisasters() {
+		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
+		HttpEntity<String> httpEntity = Utility.getHttpEntity();
+		ResponseEntity<EventList> response = restTemplate.exchange(
+				"https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=5&source=InciWeb,EO&status=open", HttpMethod.GET,
+				httpEntity, EventList.class);
+		EventList eventList = response.getBody();
+		ArrayList<Event> events = eventList.getEvents();
+		return new ModelAndView("disastertest", "events", events);
+	}
+
+	// TODO: Convert to test case
+	@RequestMapping("/disastercategorytest")
+	public ModelAndView showMeTheDisastersByCategory() {
+		RestTemplate restTemplate = Utility.getRequestFactoryRestTemplate();
+		HttpEntity<String> httpEntity = Utility.getHttpEntity();
+		String userCat = "12";
+		String userStartDate = "2016-04-12";
+		String userEndDate = "2018-07-15";
+		ArrayList<Event> disasters = NasaService.getDisasters(userCat, restTemplate, httpEntity);
+		ArrayList<String> dates = NasaService.getDates(disasters);
+		ArrayList<LocalDate> localDates = NasaService.getLocalDates(dates, userStartDate, userEndDate);
+		String[] validDatesArray = NasaService.getValidDatesArray(localDates);
+		ArrayList<Event> validEvents = NasaService.getValidEvents(validDatesArray, disasters);
+		return new ModelAndView("disastercategorytest", "events", validEvents);
+	}
+
 	@RequestMapping("/httprequesttest")
 	public ModelAndView httpRequestTest() {
 		return new ModelAndView("httprequesttest", "httprequesttest", "Hello World");

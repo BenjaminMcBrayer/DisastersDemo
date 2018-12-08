@@ -36,19 +36,25 @@
 				<option value="12">Volcanoes</option>
 				<option value="13">Water Color</option>
 				<option value="8">Wildfires</option>
-			</select> 
-			Enter start date: <input type="date" name="userstartdate" /> 
-			Enter end date: <input type="date" name="userenddate" /> 
-			Soundscape: <select name="tag">
-				<option value = "popular">Generic</option>
-				
-			</select>
-			<input type="submit" value="Submit" />
+			</select> Enter start date: <input type="date" name="userstartdate" /> Enter
+			end date: <input type="date" name="userenddate" /> Soundscape: <select
+				name="tag">
+				<option value="popular">Generic</option>
+
+			</select> <input type="submit" value="Submit" />
 		</form>
 	</div>
 	<div class=container>
-		<a href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback&scope=user-modify-playback-state">Login
-			to Spotify.</a> <br> <a href="spotifysearchtest">Spotify Search Results</a>
+		<a
+			href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback&scope=user-read-playback-state%20user-modify-playback-state">Login
+			to Spotify.</a> <br> <a href="spotifysearchtest">Spotify Search
+			Results</a> <br> <a href="spotifyplayertest">Spotify Player Test</a>
+		<br> <a href="getdeviceid">Get Device Ids</a>
 	</div>
+
+	<script src="https://sdk.scdn.co/spotify-player.js"></script>
+
+	<script src="spotify.js"></script>
+
 </body>
 </html>

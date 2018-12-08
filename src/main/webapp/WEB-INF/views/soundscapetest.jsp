@@ -28,5 +28,10 @@
 			</p>
 		</form>
 	</div>
+	<div class="container">
+		<p>
+			<a href="gettoptags">See Top Tags</a>
+		</p>
+	</div>
 </body>
 </html>

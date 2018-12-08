@@ -11,7 +11,7 @@
 
 var map, infoWindow;
 function initMap() {
-var markers = ${gmarkers};
+var markers = ${gMarkers};
 
 var style = [
     {
