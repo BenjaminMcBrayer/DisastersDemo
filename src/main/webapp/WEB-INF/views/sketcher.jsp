@@ -46,15 +46,10 @@
 	</div>
 	<div class=container>
 		<a
-			href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback&scope=user-read-playback-state%20user-modify-playback-state">Login
+			href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback&scope=user-read-currently-playing%20user-read-playback-state%20user-modify-playback-state%20streaming%20app-remote-control">Login
 			to Spotify.</a> <br> <a href="spotifysearchtest">Spotify Search
-			Results</a> <br> <a href="spotifyplayertest">Spotify Player Test</a>
-		<br> <a href="getdeviceid">Get Device Ids</a>
+			Results</a> <br> <a href="getdeviceid">Get Device Ids</a>
 	</div>
-
-	<script src="https://sdk.scdn.co/spotify-player.js"></script>
-
-	<script src="spotify.js"></script>
 
 </body>
 </html>

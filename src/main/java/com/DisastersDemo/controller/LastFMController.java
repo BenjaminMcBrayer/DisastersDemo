@@ -19,7 +19,8 @@ import com.DisastersDemo.entity.lastfm.JsonTracksWrapper;
 import com.DisastersDemo.entity.lastfm.Track;
 
 @Controller
-@SessionAttributes({"user", "validEvents", "coordinatesList", "gMarkers", "accessToken", "deviceId", "topTag"})
+@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers", "accessToken", "deviceId", "topTag",
+		"previewURL" })
 public class LastFMController {
 
 	@Value("${lastfm.api_key}")

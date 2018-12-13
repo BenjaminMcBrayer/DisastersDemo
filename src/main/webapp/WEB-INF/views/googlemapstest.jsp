@@ -7,11 +7,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script type="text/javascript">
+	function load() {
+		window.open('${ play }', '', 'width=,height=,resizable=no');
+		window.open().close();
+	}
+</script>
 <script>
 
 var map, infoWindow;
 function initMap() {
-var markers = ${gMarkers};
+var markers = ${gmarkers};
 
 var style = [
     {

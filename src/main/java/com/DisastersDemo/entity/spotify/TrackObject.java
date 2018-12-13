@@ -3,35 +3,26 @@ package com.DisastersDemo.entity.spotify;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TrackObject {
 
-	@JsonProperty
 	private Album album;
-	@JsonProperty
 	private ArrayList<Artist> artists;
-	@JsonProperty
 	private String href;
-	@JsonProperty
 	private String id;
-	@JsonProperty
 	private String name;
-	@JsonProperty
 	private boolean is_local;
-	@JsonProperty
 	private boolean is_playable;
-	@JsonProperty
 	private Long popularity;
-	@JsonProperty
 	private String uri;
+	private String preview_url;
 
 	public TrackObject() {
 	}
 
 	public TrackObject(Album album, ArrayList<Artist> artists, String href, String id, String name, boolean is_local,
-			boolean is_playable, Long popularity, String uri) {
+			boolean is_playable, Long popularity, String uri, String preview_url) {
 		this.album = album;
 		this.artists = artists;
 		this.href = href;
@@ -41,6 +32,7 @@ public class TrackObject {
 		this.is_playable = is_playable;
 		this.popularity = popularity;
 		this.uri = uri;
+		this.preview_url = preview_url;
 	}
 
 	public Album getAlbum() {
@@ -115,12 +107,18 @@ public class TrackObject {
 		this.uri = uri;
 	}
 
+	public String getPreview_url() {
+		return preview_url;
+	}
+
+	public void setPreview_url(String preview_url) {
+		this.preview_url = preview_url;
+	}
+
 	@Override
 	public String toString() {
 		return "TrackObject [album=" + album + ", artists=" + artists + ", href=" + href + ", id=" + id + ", name="
 				+ name + ", is_local=" + is_local + ", is_playable=" + is_playable + ", popularity=" + popularity
-				+ ", uri=" + uri + "]";
+				+ ", uri=" + uri + ", preview_url=" + preview_url + "]";
 	}
-	
-	
 }

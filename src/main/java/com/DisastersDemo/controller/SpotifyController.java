@@ -26,14 +26,13 @@ import com.DisastersDemo.entity.lastfm.JsonTopTagsWrapper;
 import com.DisastersDemo.entity.lastfm.JsonTracksWrapper;
 import com.DisastersDemo.entity.lastfm.Track;
 import com.DisastersDemo.entity.spotify.Device;
-import com.DisastersDemo.entity.spotify.SpotifyCurrentlyPlayingContextWrapper;
 import com.DisastersDemo.entity.spotify.SpotifyDevicesWrapper;
 import com.DisastersDemo.entity.spotify.SpotifySearchWrapper;
 import com.DisastersDemo.entity.spotify.SpotifyTokenWrapper;
 import com.wrapper.spotify.Base64;
 
 @Controller
-@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers", "accessToken", "deviceId", "topTag" })
+@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers", "accessToken", "deviceId", "topTag", "previewURL" })
 public class SpotifyController {
 
 	@Value("${spotify.client_id}")
@@ -84,41 +83,17 @@ public class SpotifyController {
 		return mv;
 	}
 
-	public String getTrackURI(HttpSession session) throws URISyntaxException {
-		RestTemplate rT = new RestTemplate();
-		JsonTopTagsWrapper jTTW = rT.getForObject(
-				"http://ws.audioscrobbler.com/2.0/?method=tag.getTopTags&api_key=" + lastFMKey + "&format=json",
-				JsonTopTagsWrapper.class);
-		// TODO: Get random top tag from the array
-		String topTag = jTTW.getTopTags().getTags()[0].getName();
-		JsonTracksWrapper jTW = rT.getForObject("http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag="
-				+ topTag + "&limit=5&api_key=" + lastFMKey + "&format=json", JsonTracksWrapper.class);
-		List<Track> lastFMTracks = jTW.getTracklist().getTracks();
-		int numTracks = 5;
-		Random trackRoller = new Random();
-		int trackNum = trackRoller.nextInt(numTracks);
-		String randomTrackName = lastFMTracks.get(trackNum).getName();
-		URI uri = new URI("https://api.spotify.com/v1/search?query=" + randomTrackName
-				+ "&type=track&market=US&offset=0&limit=20");
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add("Accept", "application/json");
-		headers.add("Authorization", "Bearer " + session.getAttribute("accessToken"));
-		RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<MultiValueMap<String, String>>(null,
-				headers, HttpMethod.GET, uri);
-		ResponseEntity<SpotifySearchWrapper> response = rT.exchange(request, SpotifySearchWrapper.class);
-		String trackURI = response.getBody().getTracks().getItems().get(0).getUri();
-		return trackURI;
-	}
-
 	@RequestMapping("playspotifytrack")
 	public ModelAndView playSpotifyTrack(HttpSession session) throws URISyntaxException {
 		RestTemplate rT = new RestTemplate();
 		JsonTopTagsWrapper jTTW = rT.getForObject(
 				"http://ws.audioscrobbler.com/2.0/?method=tag.getTopTags&api_key=" + lastFMKey + "&format=json",
 				JsonTopTagsWrapper.class);
-		// TODO: Get random top tag from the array
-		String topTag = jTTW.getTopTags().getTags()[0].getName();
+		int numTags = 5;
+		Random tagRoller = new Random();
+		int tagNum = tagRoller.nextInt(numTags);
+		String topTag = jTTW.getTopTags().getTags()[tagNum].getName();
+		System.out.println("Top Tag: " + topTag);
 		JsonTracksWrapper jTW = rT.getForObject("http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag="
 				+ topTag + "&limit=5&api_key=" + lastFMKey + "&format=json", JsonTracksWrapper.class);
 		List<Track> lastFMTracks = jTW.getTracklist().getTracks();
@@ -126,6 +101,7 @@ public class SpotifyController {
 		Random trackRoller = new Random();
 		int trackNum = trackRoller.nextInt(numTracks);
 		String randomTrackName = lastFMTracks.get(trackNum).getName();
+		System.out.println(randomTrackName);
 		randomTrackName = randomTrackName.replaceAll("\\s", "+");
 		URI randomTrackURI = new URI("https://api.spotify.com/v1/search?query=" + randomTrackName
 				+ "&type=track&market=US&offset=0&limit=20");
@@ -136,19 +112,10 @@ public class SpotifyController {
 		RequestEntity<MultiValueMap<String, String>> trackRequest = new RequestEntity<MultiValueMap<String, String>>(
 				null, trackHeaders, HttpMethod.GET, randomTrackURI);
 		ResponseEntity<SpotifySearchWrapper> trackResponse = rT.exchange(trackRequest, SpotifySearchWrapper.class);
-		String trackURI = trackResponse.getBody().getTracks().getItems().get(0).getUri();
-		URI playerUri = new URI("https://api.spotify.com/v1/me/player/play");
-		HttpHeaders playerHeaders = new HttpHeaders();
-		playerHeaders.setContentType(MediaType.APPLICATION_JSON);
-		playerHeaders.add("Accept", "application/json");
-		playerHeaders.add("Authorization", "Bearer " + session.getAttribute("accessToken"));
-		MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-		body.add("context_uri", trackURI);
-		RequestEntity<MultiValueMap<String, String>> playerRequest = new RequestEntity<MultiValueMap<String, String>>(
-				body, playerHeaders, HttpMethod.PUT, playerUri);
-		ResponseEntity<SpotifyCurrentlyPlayingContextWrapper> playerResponse = rT.exchange(playerRequest,
-				SpotifyCurrentlyPlayingContextWrapper.class);
-		return new ModelAndView("spotifyplayer", "playertest", playerResponse.getBody().getIs_playing());
+		String previewURL = trackResponse.getBody().getTracks().getItems().get(0).getPreview_url();
+		session.setAttribute("previewURL", previewURL);
+		System.out.println(trackResponse.getBody().getTracks().getItems().get(0).getName());
+		return new ModelAndView("spotifyplayer", "play", previewURL);
 	}
 
 	// Convert to test case.
@@ -180,30 +147,46 @@ public class SpotifyController {
 		ResponseEntity<SpotifyDevicesWrapper> response = rT.exchange(request, SpotifyDevicesWrapper.class);
 		Device[] devices = response.getBody().getDevices();
 		String deviceId = null;
+		Boolean is_active = null;
 		for (int i = 0; i < devices.length; ++i) {
 			if (devices[i].getName().equals("Web Player (Chrome)")) {
 				deviceId = devices[i].getId();
+				is_active = devices[i].getIs_active();
 			}
 		}
 		session.setAttribute("deviceId", deviceId);
-		return new ModelAndView("deviceid", "deviceid", deviceId);
+		ModelAndView mV = new ModelAndView("deviceid");
+		mV.addObject("deviceId", deviceId);
+		mV.addObject("is_active", is_active);
+		return mV;
 	}
 
-	@RequestMapping("spotifyplayertest")
+	// This will only work if the device is currently active.
+	@RequestMapping("testspotifyplayer")
 	public ModelAndView spotifyPlayerTest(HttpSession session) throws URISyntaxException {
-		URI uRI = new URI("https://api.spotify.com/v1/me/player/play?device_id=" + session.getAttribute("deviceId"));
+		String deviceId = (String) session.getAttribute("deviceId");
+		URI uRI = new URI("https://api.spotify.com/v1/me/player/play");
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add("Accept", "application/json");
 		headers.add("Authorization", "Bearer " + session.getAttribute("accessToken"));
 		MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-		body.add("context_uri", "spotify:album:1Je1IMUlBXcx1Fz0WE7oPT");
-		RequestEntity<MultiValueMap<String, String>> playerRequest = new RequestEntity<MultiValueMap<String, String>>(
-				null, headers, HttpMethod.PUT, uRI);
+		body.add("device_id", deviceId);
+		RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<MultiValueMap<String, String>>(body,
+				headers, HttpMethod.PUT, uRI);
+		System.out.println(request.getHeaders());
+		System.out.println(request.getBody());
 		RestTemplate rT = new RestTemplate();
-		ResponseEntity<SpotifyCurrentlyPlayingContextWrapper> response = rT.exchange(playerRequest,
-				SpotifyCurrentlyPlayingContextWrapper.class);
-		return new ModelAndView("spotifyplayertest", "playertest", response.getBody().getIs_playing());
+		rT.put("https://api.spotify.com/v1/me/player/play", request);
+		return new ModelAndView("spotifyplayertest", "message", "It worked!");
+	}
+	
+	@RequestMapping("testspotifysdk")
+	public ModelAndView spotifySDKTest(HttpSession session) {
+		ModelAndView mV = new ModelAndView("spotifysdktest");
+		mV.addObject("accessToken", session.getAttribute("accessToken"));
+		mV.addObject("deviceId", session.getAttribute("deviceId"));
+		return mV;
 	}
 
 }
