@@ -1,24 +1,16 @@
 package com.DisastersDemo.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,12 +19,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.DisastersDemo.entity.google.GMarker;
-import com.DisastersDemo.entity.lastfm.JsonTopTagsWrapper;
-import com.DisastersDemo.entity.lastfm.JsonTracksWrapper;
-import com.DisastersDemo.entity.lastfm.Track;
 import com.DisastersDemo.entity.nasa.Event;
 import com.DisastersDemo.entity.nasa.EventList;
-import com.DisastersDemo.entity.spotify.SpotifySearchWrapper;
 import com.DisastersDemo.repo.UsersRepository;
 import com.DisastersDemo.service.nasa.NasaService;
 import com.DisastersDemo.utility.Utility;
@@ -42,12 +30,13 @@ import com.DisastersDemo.utility.Utility;
  *
  */
 @Controller
-@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers", "accessToken", "deviceId", "topTag", "previewURL" })
+@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers", "accessToken", "deviceId", "topTag",
+		"previewURL" })
 public class DisasterController {
 
 	@Value("${nasa.api_key}")
 	private String nasaKey;
-	
+
 	@Value("${lastfm.api_key}")
 	private String lastFMKey;
 
@@ -110,54 +99,8 @@ public class DisasterController {
 	}
 
 	@RequestMapping("/sketchmygmarkers")
-	public ModelAndView sketchMyGMarkers(HttpSession session) throws URISyntaxException {
-		//@SuppressWarnings("unchecked")
-		// ArrayList<GMarker> gMarkers = (ArrayList<GMarker>)
-		// session.getAttribute("gmarkers");
-		/*SpotifyController sC = new SpotifyController();
-		sC.playSpotifyTrack(session);*/
-		/*RestTemplate rT = new RestTemplate();
-		JsonTopTagsWrapper jTTW = rT.getForObject(
-				"http://ws.audioscrobbler.com/2.0/?method=tag.getTopTags&api_key=" + lastFMKey + "&format=json",
-				JsonTopTagsWrapper.class);
-		int numTags = 5;
-		Random tagRoller = new Random();
-		int tagNum = tagRoller.nextInt(numTags);
-		String topTag = jTTW.getTopTags().getTags()[tagNum].getName();
-		System.out.println("Top Tag: " + topTag);
-		JsonTracksWrapper jTW = rT.getForObject("http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag="
-				+ topTag + "&limit=5&api_key=" + lastFMKey + "&format=json", JsonTracksWrapper.class);
-		List<Track> lastFMTracks = jTW.getTracklist().getTracks();
-		int numTracks = 5;
-		Random trackRoller = new Random();
-		int trackNum = trackRoller.nextInt(numTracks);
-		String randomTrackName = lastFMTracks.get(trackNum).getName();
-		System.out.println(randomTrackName);
-		randomTrackName = randomTrackName.replaceAll("\\s", "+");
-		URI randomTrackURI = new URI("https://api.spotify.com/v1/search?query=" + randomTrackName
-				+ "&type=track&market=US&offset=0&limit=20");
-		HttpHeaders trackHeaders = new HttpHeaders();
-		trackHeaders.setContentType(MediaType.APPLICATION_JSON);
-		trackHeaders.add("Accept", "application/json");
-		trackHeaders.add("Authorization", "Bearer " + session.getAttribute("accessToken"));
-		RequestEntity<MultiValueMap<String, String>> trackRequest = new RequestEntity<MultiValueMap<String, String>>(
-				null, trackHeaders, HttpMethod.GET, randomTrackURI);
-		ResponseEntity<SpotifySearchWrapper> trackResponse = rT.exchange(trackRequest, SpotifySearchWrapper.class);
-		String previewURL = trackResponse.getBody().getTracks().getItems().get(0).getPreview_url();
-		session.setAttribute("previewURL", previewURL);
-		ModelAndView mV = new ModelAndView("googlemapstest");
-		mV.addObject("play", session.getAttribute("previewURL"));
-		System.out.println(trackResponse.getBody().getTracks().getItems().get(0).getName());*/
-		ModelAndView mV = new ModelAndView("googlemapstest");
-		mV.addObject("gmarkers", session.getAttribute("gMarkers"));
-		return mV;
-	}
-
-	@RequestMapping("/sketchmygmarkers2")
 	public ModelAndView sketchMyGMarkers2(HttpSession session) {
-		//@SuppressWarnings("unchecked")
-		//ArrayList<GMarker> gMarkers = (ArrayList<GMarker>) session.getAttribute("gmarkers");
-		ModelAndView mV = new ModelAndView("googlemapstest2");
+		ModelAndView mV = new ModelAndView("disasterpiecetheatre");
 		mV.addObject("gmarkers", session.getAttribute("gMarkers"));
 		mV.addObject("play", session.getAttribute("previewURL"));
 		return mV;
