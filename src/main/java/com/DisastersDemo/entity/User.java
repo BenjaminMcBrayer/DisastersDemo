@@ -1,5 +1,6 @@
 package com.DisastersDemo.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,90 +12,57 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table (name = "users")
+@Table(name = "users")
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long userid;
-	private String username;
-	private String password;
+	@Column(name = "user_id")
+	private Long userId;
+	@Column(name = "display_name")
+	private String displayName;
+	private String email;
 
-	/**
-	 * 
-	 */
 	public User() {
 	}
 
-	/**
-	 * @param userid
-	 * @param username
-	 * @param password
-	 */
-	public User(Long userid, String username, String password, Long lastFMId) {
-		this.userid = userid;
-		this.username = username;
-		this.password = password;
+	public User(Long userId, String displayName, String email) {
+		this.userId = userId;
+		this.displayName = displayName;
+		this.email = email;
 	}
 
-	/**
-	 * @param username
-	 * @param password
-	 */
-	public User(String username, String password, Long lastFMId) {
-		this.username = username;
-		this.password = password;
+	public User(String displayName, String email) {
+		this.displayName = displayName;
+		this.email = email;
 	}
 
-	/**
-	 * @return the userid
-	 */
-	public Long getUserid() {
-		return userid;
+	public Long getUserId() {
+		return userId;
 	}
 
-	/**
-	 * @param userid the userid to set
-	 */
-	public void setUserid(Long userid) {
-		this.userid = userid;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	/**
-	 * @return the username
-	 */
-	public String getUsername() {
-		return username;
+	public String getDisplayName() {
+		return displayName;
 	}
 
-	/**
-	 * @param username the username to set
-	 */
-	public void setUsername(String username) {
-		this.username = username;
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
-	/**
-	 * @return the password
-	 */
-	public String getPassword() {
-		return password;
+	public String getEmail() {
+		return email;
 	}
 
-	/**
-	 * @param password the password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
-		return "User [userid=" + userid + ", username=" + username + ", password=" + password + "]";
+		return "User [userId=" + userId + ", displayName=" + displayName + ", email=" + email + "]";
 	}
 }

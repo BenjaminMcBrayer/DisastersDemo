@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,14 +17,11 @@
 <body>
 	<%@include file="partials/header.jsp"%>
 	<p class="message">${ message }</p>
-	<h3>Welcome</h3>
-	<a href="/disastertest">Disasters by Event</a>
-	<br>
-	<a href="disastercategorytest">Disasters by Category</a>
-	<br>
-	<a href="/soundscapetest">Soundscapes</a>
-	<br>
-	<a href="sketcher">Sketcher</a>
-	<br>
+	<h3>Welcome to the Event Sketcher</h3>
+	<div class=container>
+		To continue, please <a
+			href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback&scope=user-read-currently-playing%20user-read-playback-state%20user-modify-playback-state%20user-read-email">click
+			here </a>to log in to your Spotify account.
+	</div>
 </body>
 </html>

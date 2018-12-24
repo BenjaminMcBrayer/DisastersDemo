@@ -7,6 +7,7 @@ import java.util.Random;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.DisastersDemo.entity.User;
 import com.DisastersDemo.entity.lastfm.JsonTopTagsWrapper;
 import com.DisastersDemo.entity.lastfm.JsonTracksWrapper;
 import com.DisastersDemo.entity.lastfm.Track;
@@ -29,10 +32,13 @@ import com.DisastersDemo.entity.spotify.Device;
 import com.DisastersDemo.entity.spotify.SpotifyDevicesWrapper;
 import com.DisastersDemo.entity.spotify.SpotifySearchWrapper;
 import com.DisastersDemo.entity.spotify.SpotifyTokenWrapper;
+import com.DisastersDemo.entity.spotify.UserDetails;
+import com.DisastersDemo.repo.UsersRepository;
 import com.wrapper.spotify.Base64;
 
 @Controller
-@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers", "accessToken", "deviceId", "topTag", "previewURL" })
+@SessionAttributes({ "user", "validEvents", "coordinatesList", "gMarkers", "accessToken", "deviceId", "topTag",
+		"previewURL" })
 public class SpotifyController {
 
 	@Value("${spotify.client_id}")
@@ -44,6 +50,9 @@ public class SpotifyController {
 	@Value("${lastfm.api_key}")
 	private String lastFMKey;
 
+	@Autowired
+	UsersRepository uR;
+
 	private String code;
 
 	public String getCode() {
@@ -54,15 +63,10 @@ public class SpotifyController {
 		this.code = code;
 	}
 
-	// Testing Spotify
-	@RequestMapping("spotifytest")
-	public String spotifyTest() {
-		return "spotifytest";
-	}
-
 	@RequestMapping("/spotifycallback")
-	public ModelAndView spotifyCallback(@RequestParam("code") String code, HttpSession session)
-			throws URISyntaxException {
+	public ModelAndView spotifyCallback(@RequestParam("code") String code, HttpSession session,
+			RedirectAttributes redir) throws URISyntaxException {
+		// Get access token.
 		setCode(code);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -71,16 +75,34 @@ public class SpotifyController {
 		body.add("grant_type", "authorization_code");
 		body.add("code", code);
 		body.add("redirect_uri", "http://localhost:8080/spotifycallback");
-		URI uri = new URI("https://accounts.spotify.com/api/token");
+		URI uRI = new URI("https://accounts.spotify.com/api/token");
 		RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<MultiValueMap<String, String>>(body,
-				headers, HttpMethod.POST, uri);
+				headers, HttpMethod.POST, uRI);
 		RestTemplate rT = new RestTemplate();
 		ResponseEntity<SpotifyTokenWrapper> response = rT.exchange(request, SpotifyTokenWrapper.class);
 		String accessToken = response.getBody().getAccess_token();
 		System.out.println(accessToken);
 		session.setAttribute("accessToken", accessToken);
-		ModelAndView mv = new ModelAndView("redirect:/sketcher");
-		return mv;
+		// Get display_name and email for user.
+		headers.clear();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add("Accept", "application/json");
+		headers.add("Authorization", "Bearer " + session.getAttribute("accessToken"));
+		URI userURI = new URI("https://api.spotify.com/v1/me");
+		RequestEntity<MultiValueMap<String, String>> userRequest = new RequestEntity<MultiValueMap<String, String>>(
+				null, headers, HttpMethod.GET, userURI);
+		ResponseEntity<UserDetails> userResponse = rT.exchange(userRequest, UserDetails.class);
+		if (uR.findByEmail(userResponse.getBody().getEmail()) == null) {
+			// Create a new user in database.
+			String displayName = userResponse.getBody().getDisplayName();
+			String email = userResponse.getBody().getEmail();
+			User user = new User(displayName, email);
+			uR.save(user);
+		}
+		User user = uR.findByEmail(userResponse.getBody().getEmail());
+		session.setAttribute("user", user);
+		redir.addFlashAttribute("message", "Logged in.");
+		return new ModelAndView("sketcher");
 	}
 
 	@RequestMapping("playspotifytrack")
@@ -180,7 +202,7 @@ public class SpotifyController {
 		rT.put("https://api.spotify.com/v1/me/player/play", request);
 		return new ModelAndView("spotifyplayertest", "message", "It worked!");
 	}
-	
+
 	@RequestMapping("testspotifysdk")
 	public ModelAndView spotifySDKTest(HttpSession session) {
 		ModelAndView mV = new ModelAndView("spotifysdktest");

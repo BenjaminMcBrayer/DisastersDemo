@@ -12,17 +12,17 @@
 <link rel="stylesheet"
 	href="https://bootswatch.com/_assets/css/custom.min.css">
 <link rel="stylesheet" href="/style.css" />
-<title>Spotify Test</title>
+<title>Welcome</title>
 </head>
 <body>
-	<%@include file="partials/header.jsp"%>
-	<p class="message">${ message }</p>
-	<form action="/" method="post"> 
-		<input	type="submit" value="Submit"></input>
-	</form>
-	<a href="https://accounts.spotify.com/authorize?client_id=f03957080db2440c8d93f34eacb90144&response_type=code&redirect_uri=http://localhost:8080/spotifycallback">Click here, please.</a>
-</head>
-<body>
-
+	<h3>Welcome</h3>
+	<a href="/disastertest">Disasters by Event</a>
+	<br>
+	<a href="disastercategorytest">Disasters by Category</a>
+	<br>
+	<a href="/soundscapetest">Soundscapes</a>
+	<br>
+	<a href="sketcher">Sketcher</a>
+	<br>
 </body>
 </html>

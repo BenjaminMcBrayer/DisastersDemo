@@ -20,11 +20,9 @@ public class NasaService {
 
 	public static ArrayList<Event> getDisasters(String userCat, RestTemplate restTemplate,
 			HttpEntity<String> httpEntity) {
-		ResponseEntity<EventList> response = restTemplate
-				.exchange(
-						"https://eonet.sci.gsfc.nasa.gov/api/v2.1/categories/" + userCat
-								+ "?limit=50&source=InciWeb,EO&status=open",
-						HttpMethod.GET, httpEntity, EventList.class);
+		ResponseEntity<EventList> response = restTemplate.exchange(
+				"https://eonet.sci.gsfc.nasa.gov/api/v2.1/categories/" + userCat, HttpMethod.GET, httpEntity,
+				EventList.class);
 		EventList eventList = response.getBody();
 		ArrayList<Event> disasters = eventList.getEvents();
 		return disasters;
